@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "863115120411",
+    "firebase_url": "https://code-fighters.firebaseio.com",
+    "project_id": "code-fighters",
+    "storage_bucket": "code-fighters.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:863115120411:android:dae64e98038b5640",
+        "android_client_info": {
+          "package_name": "atlascience.bitmaptest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "863115120411-9bpck0oseros2lilc3qg45isro7r29me.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "atlascience.bitmaptest",
+            "certificate_hash": "05ffaf4ad1b0114af857a5219d51a0c686d116cf"
+          }
+        },
+        {
+          "client_id": "863115120411-mpgh4mcmq5e54n52edpqo0avl2r8d6ll.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "atlascience.bitmaptest",
+            "certificate_hash": "aec42783fdb9815d86fe74c3765d107e8cc465b2"
+          }
+        },
+        {
+          "client_id": "863115120411-8e58s2dbuc6o9c0bdk972p6a00tcdvev.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlbQQi18_BOLAz_mY8pABu2AootxtyBZA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "863115120411-8e58s2dbuc6o9c0bdk972p6a00tcdvev.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

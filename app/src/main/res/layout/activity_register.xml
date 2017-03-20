@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorBackBlue">
+
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/nickname"
+        android:hint="Username"
+        android:singleLine="false"
+        android:textColorHint="@color/colorPrimaryDark"
+        android:background="@drawable/rounded_login_edit_text"
+        android:padding="15dp"
+
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="60dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/password"
+        android:hint="Password"
+        android:singleLine="false"
+        android:textColorHint="@color/colorPrimaryDark"
+        android:background="@drawable/rounded_login_edit_text"
+        android:padding="15dp"
+        android:layout_below="@+id/email"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/email"
+        android:hint="Email"
+        android:singleLine="false"
+        android:textColorHint="@color/colorPrimaryDark"
+        android:background="@drawable/rounded_login_edit_text"
+        android:padding="15dp"
+
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/nickname"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp" />
+
+
+    <Button
+        android:text="SIgn up"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/sign_up_btn"
+        android:background="@drawable/rounded_login_button"
+        android:textColor="@android:color/background_light"
+        android:layout_marginTop="19dp"
+        android:layout_below="@+id/password"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="Welcome to Coders Fight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView5"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:textColor="@android:color/background_light" />
+
+</RelativeLayout>
