@@ -1,4 +1,4 @@
-package atlascience.bitmaptest.Objects;
+package atlascience.bitmaptest.Models;
 
 
 import android.content.Context;
@@ -7,22 +7,13 @@ import android.content.SharedPreferences;
 
 import com.google.gson.JsonObject;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import atlascience.bitmaptest.Activities.MainActivity;
 import atlascience.bitmaptest.Activities.ProfileActivity;
-import atlascience.bitmaptest.Auth.LoginActivity;
-import atlascience.bitmaptest.Services.MyFirebaseMessagingService;
-import retrofit2.Response;
 
 public class Game {
-    static  SharedPreferences sharPref;
-    static  SharedPreferences.Editor editor;
-    JsonObject jsonObject;
     public static final String PREF_NAME = "game_round";
     public static final String KEY_GAME_ID = "game_id";
     public static final String KEY_USER_ID1 = "user_id1";
@@ -33,8 +24,10 @@ public class Game {
     public static final String KEY_USERNAME_1 = "username_id1";
     public static final String KEY_USERNAME_2 = "username_id2";
     public static Context context;
-
     public static ArrayList<Integer> zones;
+    static SharedPreferences sharPref;
+    static SharedPreferences.Editor editor;
+    JsonObject jsonObject;
 
     public Game(Context context) {
         sharPref = context.getSharedPreferences(PREF_NAME,Context.MODE_PRIVATE);

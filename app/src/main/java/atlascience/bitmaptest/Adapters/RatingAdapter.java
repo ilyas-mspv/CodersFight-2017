@@ -8,35 +8,52 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
-import atlascience.bitmaptest.Objects.Rating_User;
+import atlascience.bitmaptest.Models.Rating.Rating;
 import atlascience.bitmaptest.R;
 
-public class RatingAdapter extends ArrayList<Rating_User> {
+public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingViewHolder> {
 
-    List<Rating_User> rating_users;
-    Context context;
-    private LayoutInflater mInflater;
+    private List<Rating> users;
+    private int rowLayout;
+    private Context context;
 
-    public RatingAdapter(List<Rating_User> rating_users, Context context) {
-        this.mInflater = LayoutInflater.from(context);
-        this.rating_users = rating_users;
+    public RatingAdapter(List<Rating> users, int rowLayout, Context context) {
+        this.users = users;
+        this.rowLayout = rowLayout;
         this.context = context;
     }
 
-    public Rating_User getItem(int position){
-        return rating_users.get(position);
+    @Override
+    public RatingViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(rowLayout, parent, false);
+        return new RatingViewHolder(v);
     }
 
+    @Override
+    public void onBindViewHolder(RatingViewHolder holder, int position) {
+        holder.order_number.setText(String.valueOf(users.get(position).getId()));
+        holder.username.setText(users.get(position).getUsername());
+        holder.rating_number.setText(String.valueOf(users.get(position).getRating()));
+    }
 
+    @Override
+    public int getItemCount() {
+        return users.size();
+    }
 
+    public class RatingViewHolder extends RecyclerView.ViewHolder {
 
+        TextView order_number, username, rating_number;
 
+        public RatingViewHolder(View itemView) {
+            super(itemView);
 
+            order_number = (TextView) itemView.findViewById(R.id.order_number);
+            username = (TextView) itemView.findViewById(R.id.username_rating);
+            rating_number = (TextView) itemView.findViewById(R.id.rating_number);
+
+        }
+    }
 }

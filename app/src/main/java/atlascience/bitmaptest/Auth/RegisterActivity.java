@@ -14,12 +14,11 @@ import com.google.gson.JsonObject;
 
 import atlascience.bitmaptest.Activities.ProfileActivity;
 import atlascience.bitmaptest.AppController;
-import atlascience.bitmaptest.Objects.User;
+import atlascience.bitmaptest.Models.User;
 import atlascience.bitmaptest.R;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
 
 public class RegisterActivity  extends AppCompatActivity {
 

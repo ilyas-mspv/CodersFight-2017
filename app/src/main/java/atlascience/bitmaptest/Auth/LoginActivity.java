@@ -2,31 +2,20 @@ package atlascience.bitmaptest.Auth;
 
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.gson.JsonObject;
 
-import org.apache.http.auth.AUTH;
-
 import atlascience.bitmaptest.AppController;
-import atlascience.bitmaptest.Objects.User;
+import atlascience.bitmaptest.Models.User;
 import atlascience.bitmaptest.Activities.ProfileActivity;
 import atlascience.bitmaptest.R;
-import atlascience.bitmaptest.Services.Config;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

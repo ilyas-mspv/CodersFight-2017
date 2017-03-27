@@ -2,49 +2,35 @@ package atlascience.bitmaptest.Activities;
 
 
 import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
+import android.media.Rating;
 import android.os.Bundle;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
+import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.gson.JsonObject;
 
-import org.json.JSONObject;
-
-import java.net.InetAddress;
 import java.util.HashMap;
 
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Auth.SessionManager;
-import atlascience.bitmaptest.Objects.Game;
 import atlascience.bitmaptest.R;
-import atlascience.bitmaptest.Services.Config;
-import atlascience.bitmaptest.Services.MyFirebaseInstanceIDService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity {
 
+    private static final String TAG = ProfileActivity.class.getSimpleName();
     SessionManager session;
-    Button logout,play_button,rating;
+    Button logout, play_button, rating, knowledge;
     TextView username;
     ProgressDialog dialog;
-    private static final String TAG = ProfileActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +44,6 @@ public class ProfileActivity extends AppCompatActivity {
 
 
     private void init_buttons() {
-
         logout = (Button) findViewById(R.id.log_out);
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,7 +52,20 @@ public class ProfileActivity extends AppCompatActivity {
             }
         });
 
-
+        rating = (Button) findViewById(R.id.rating__btn_profile);
+        rating.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProfileActivity.this, RatingActivity.class));
+            }
+        });
+        knowledge = (Button) findViewById(R.id.knowledge_btn_profile);
+        knowledge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProfileActivity.this, KnowledgeTopicsActivity.class));
+            }
+        });
     }
     private void get_data() {
         session = new SessionManager(getApplicationContext());

@@ -2,35 +2,65 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
     <RelativeLayout
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.v7.widget.CardView
+            android:id="@+id/timer_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="false"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentStart="false"
-            app:cardCornerRadius="8dp"
-            android:layout_marginTop="5dp"
-            android:layout_margin="5dp"
-            android:id="@+id/question_card">
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            app:cardCornerRadius="8dp">
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <TextView
-                    android:text="TextView"
-                    android:layout_width="wrap_content"
+                <ProgressBar
+                    android:id="@+id/timer_progress_bar_rating"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/question_dialog" />
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_margin="5dp" />
+            </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+            android:id="@+id/question_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentStart="false"
+            android:layout_alignParentTop="false"
+            android:layout_below="@+id/timer_card"
+            android:layout_margin="5dp"
+            android:layout_marginTop="5dp"
+            app:cardCornerRadius="8dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:background="@color/gray_btn_bg_color">
+
+                <WebView
+                    android:id="@+id/web_question_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/question_dialog"
+                    android:layout_toRightOf="@+id/question_dialog" />
 
             </RelativeLayout>
 
@@ -40,83 +70,90 @@
     <LinearLayout
 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp">
 
         <android.support.v7.widget.CardView
-            android:layout_weight="1"
+            android:id="@+id/answer1_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:id="@+id/answer1_card">
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:elevation="4dp">
 
             <TextView
-                android:text="TextView"
-                android:layout_width="wrap_content"
+                android:id="@+id/answer1_dialog"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/answer1_dialog" />
+                android:text="TextView"
+                android:textAlignment="center" />
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
-            android:layout_weight="1"
+            android:id="@+id/answer2_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:id="@+id/answer2_card">
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:elevation="4dp">
 
             <TextView
-                android:text="TextView"
-                android:layout_width="wrap_content"
+                android:id="@+id/answer2_dialog"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/answer2_dialog" />
+                android:text="TextView"
+                android:textAlignment="center" />
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
-            android:layout_weight="1"
+            android:id="@+id/answer3_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:id="@+id/answer3_card">
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:elevation="4dp">
 
             <TextView
-                android:text="TextView"
-                android:layout_width="wrap_content"
+                android:id="@+id/answer3_dialog"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/answer3_dialog" />
+                android:text="TextView"
+                android:textAlignment="center" />
         </android.support.v7.widget.CardView>
 
         <android.support.v7.widget.CardView
-            android:layout_weight="1"
+            android:id="@+id/answer4_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:id="@+id/answer4_card">
+            android:layout_margin="5dp"
+            android:layout_weight="1"
+            android:elevation="4dp">
 
             <TextView
-                android:text="TextView"
-                android:layout_width="wrap_content"
+                android:id="@+id/answer4_dialog"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/answer4_dialog" />
+                android:text="TextView"
+                android:textAlignment="center" />
         </android.support.v7.widget.CardView>
-
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <Button
-            android:text="+1"
-            android:layout_width="wrap_content"
+            android:id="@+id/plus_rating_button"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/rate_plus"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="+1" />
 
         <Button
-            android:text="-1"
-            android:layout_width="wrap_content"
+            android:id="@+id/minus_rating_button"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/rate_minus"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:text="-1" />
     </LinearLayout>
-
 </LinearLayout>

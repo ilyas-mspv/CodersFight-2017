@@ -7,22 +7,15 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.google.gson.JsonObject;
 
-import java.util.HashMap;
-
-import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Auth.SessionManager;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 
-public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
+public class InstanceIDService extends FirebaseInstanceIdService {
 
+    private static final String TAG = InstanceIDService.class.getSimpleName();
     String refreshedToken;
     SessionManager session;
-    private static final String TAG = MyFirebaseInstanceIDService.class.getSimpleName();
 
     @Override
     public void onTokenRefresh() {

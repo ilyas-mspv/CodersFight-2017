@@ -8,14 +8,11 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 
@@ -24,7 +21,6 @@ import java.util.HashMap;
 
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Auth.SessionManager;
-import atlascience.bitmaptest.Objects.Game;
 import atlascience.bitmaptest.R;
 import atlascience.bitmaptest.Services.Config;
 import retrofit2.Call;
@@ -33,11 +29,11 @@ import retrofit2.Response;
 
 public class QueueActivity extends AppCompatActivity {
 
+    private static final String TAG = QueueActivity.class.getSimpleName();
     Button find_player,random_player;
     SessionManager session;
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
-    private static final String TAG = QueueActivity.class.getSimpleName();
     String username;
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

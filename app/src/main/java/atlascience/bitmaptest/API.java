@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
 
+import atlascience.bitmaptest.Models.Knowledge.TopicsResponse;
+import atlascience.bitmaptest.Models.Rating.RatingResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Query;
@@ -71,18 +73,25 @@ public interface API {
     );
 
     @GET("api.php")
-    Call<JSONObject> getAllUser(
+    Call<RatingResponse> getAllUser(
             @Query("method") String method
     );
 
     @GET("api.php")
     Call<JSONObject> get_answer(
             @Query("method") String method,
-            @Query("game_id") String game_id,
-            @Query("question_id") String queston_id,
-            @Query("answer") String answer,
-            @Query("time") String time,
-            @Query("user_id") String user_id
+            @Query("game_id") int games_id,
+            @Query("question_id") int question_id,
+            @Query("answer") int answer,
+            @Query("time") double time,
+            @Query("user_id") int user_id,
+            @Query("zone") int zone
+    );
+
+
+    @GET("api.php")
+    Call<TopicsResponse> getAllTopics(
+            @Query("method") String method
     );
 
 

@@ -1,14 +1,7 @@
-package atlascience.bitmaptest.Objects;
+package atlascience.bitmaptest.Models;
 
 
-import android.content.Context;
-import android.content.SharedPreferences;
-
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import org.json.JSONObject;
 
 import retrofit2.Response;
 
