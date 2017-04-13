@@ -18,4 +18,11 @@
         android:text="topic"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textStyle="normal|bold" />
+
+    <TextView
+        android:id="@+id/content_from_topic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:visibility="gone" />
 </RelativeLayout>

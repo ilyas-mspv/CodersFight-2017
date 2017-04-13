@@ -1,7 +1,7 @@
 package atlascience.bitmaptest.Fragments;
 
 
-import android.content.Intent;
+import android.content.BroadcastReceiver;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 import atlascience.bitmaptest.AppController;
+import atlascience.bitmaptest.Authenticator.SessionManager;
 import atlascience.bitmaptest.Models.Game;
 import atlascience.bitmaptest.Models.Question;
 import atlascience.bitmaptest.R;
@@ -27,24 +28,32 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class QuestionToAnswerFragment extends DialogFragment {
+public class QuestionFragment extends DialogFragment {
     static int time;
     static int u_id;
+    static int move_user_id;
+    int r_time;
     View v;
     TextView answer1_textView, answer2_textView, answer3_textView, answer4_textView;
-    ;
     CardView question_card,answer1_card,answer2_card,answer3_card,answer4_card;
-    String question, answer1, answer2, answer3, answer4, answer_true, question_id;
+    String question, answer1, answer2, answer3, answer4, answer_true, question_id, zone_question, game_round_id;
     String url;
     ProgressBar progressBar;
-    MyCountdownTimer timer;
     WebView question_content;
-    boolean isPaused = false;
-    double timer_user;
+    MyCountdownTimer timer;
+
+    int timer_user;
     int zone;
 
-    public QuestionToAnswerFragment(int user_id) {
+    boolean isCallable = false;
+    boolean is_success_answer = false;
+
+    private BroadcastReceiver mRegistrationBroadcastReceiver;
+
+
+    public QuestionFragment(int user_id, int move_user_id) {
         u_id = user_id;
+        QuestionFragment.move_user_id = move_user_id;
     }
 
     @Nullable
@@ -53,7 +62,6 @@ public class QuestionToAnswerFragment extends DialogFragment {
         v = inflater.inflate(R.layout.fragment_question_to_answer_dialog,container,false);
         getDialog().requestWindowFeature(STYLE_NO_TITLE);
         setCancelable(false);
-        zone = getArguments().getInt("z");
 
         inits();
         getsetData();
@@ -70,7 +78,6 @@ public class QuestionToAnswerFragment extends DialogFragment {
         answer4_textView = (TextView) v.findViewById(R.id.answer4_dialog);
         question_content = (WebView) v.findViewById(R.id.web_question_content);
 
-        question_card = (CardView) v.findViewById(R.id.question_card);
         answer1_card = (CardView) v.findViewById(R.id.answer1_card);
         answer2_card = (CardView) v.findViewById(R.id.answer2_card);
         answer3_card = (CardView) v.findViewById(R.id.answer3_card);
@@ -79,6 +86,7 @@ public class QuestionToAnswerFragment extends DialogFragment {
         progressBar = (ProgressBar) v.findViewById(R.id.timer_progress_bar);
         progressBar.setRotation(180);
     }
+
 
     private void getsetData() {
 
@@ -90,8 +98,10 @@ public class QuestionToAnswerFragment extends DialogFragment {
         answer4 = data.get(Question.KEY_ANSWER4);
         answer_true = data.get(Question.KEY_ANSWER_TRUE);
         time = Integer.parseInt(data.get(Question.KEY_TIME));
+        r_time = Integer.parseInt(data.get(Question.KEY_TIME));
         question_id = data.get(Question.KEY_QUESTION_ID);
-
+        zone_question = data.get("zone");
+        game_round_id = data.get("game_round_id");
 
         progressBar.setProgress(100);
 
@@ -111,66 +121,90 @@ public class QuestionToAnswerFragment extends DialogFragment {
         card_listeners();
     }
 
-    private void get_answer(int answer) {
+    private void set_answer(int answer) {
 
-        int z = getActivity().getIntent().getIntExtra("zone", 0);
+        zone = Integer.valueOf(zone_question);
+        Game game = new Game(getActivity().getApplicationContext());
         HashMap<String,String> game_data = Game.getDetails();
         String game_id = game_data.get(Game.KEY_GAME_ID);
-        AppController.getApi().get_answer("get_answer",
-                Integer.parseInt(game_id),
-                Integer.parseInt(question_id),
-                answer,
-                timer_user,
-                u_id,
-                zone).enqueue(new Callback<JSONObject>() {
+        String user_id1 = game_data.get(Game.KEY_USER_ID1);
+        String user_id2 = game_data.get(Game.KEY_USER_ID2);
+        String username1 = game_data.get(Game.KEY_USERNAME_1);
+        String username2 = game_data.get(Game.KEY_USERNAME_2);
+        SessionManager session = new SessionManager(getActivity().getApplicationContext());
+        HashMap<String, String> user_data = session.getUserDetails();
+        String name = user_data.get(SessionManager.KEY_NAME);
+        if (name.equals(username1)) {
+            AppController.getApi().set_answer1("set_answer_one",
+                    Integer.parseInt(game_round_id),
+                    Integer.parseInt(user_id1),
+                    (r_time * 1000) - timer_user,
+                    answer, move_user_id
+            ).enqueue(new Callback<JSONObject>() {
+                @Override
+                public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
 
-            @Override
-            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+                }
 
-            }
+                @Override
+                public void onFailure(Call<JSONObject> call, Throwable t) {
 
-            @Override
-            public void onFailure(Call<JSONObject> call, Throwable t) {
+                }
+            });
+        } else {
+            AppController.getApi().set_answer2("set_answer_two",
+                    Integer.parseInt(game_round_id),
+                    Integer.parseInt(user_id2),
+                    (r_time * 1000) - timer_user,
+                    answer, move_user_id
+            ).enqueue(new Callback<JSONObject>() {
+                @Override
+                public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
 
-            }
-        });
+                }
+
+                @Override
+                public void onFailure(Call<JSONObject> call, Throwable t) {
+
+                }
+            });
+        }
     }
 
 
     private int card_listeners() {
+
+
         final int[] i = {0};
         answer1_card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 i[0] = 1;
-                get_answer(i[0]);
+                set_answer(i[0]);
                 timerPause();
             }
         });
         answer2_card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isPaused = true;
                 i[0] =2;
-                get_answer(i[0]);
+                set_answer(i[0]);
                 timerPause();
             }
         });
         answer3_card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isPaused = true;
                 i[0] = 3;
-                get_answer(i[0]);
+                set_answer(i[0]);
                 timerPause();
             }
         });
         answer4_card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isPaused = true;
                 i[0] = 4;
-                get_answer(i[0]);
+                set_answer(i[0]);
                 timerPause();
             }
         });
@@ -200,7 +234,7 @@ public class QuestionToAnswerFragment extends DialogFragment {
 
         @Override
         public void onTick(long millisUntilFinished) {
-            timer_user = millisUntilFinished / 1000;
+            timer_user = (int) millisUntilFinished;
             long timer_time = millisUntilFinished / 100;
             progressBar.setProgress((int) timer_time);
 
@@ -208,9 +242,7 @@ public class QuestionToAnswerFragment extends DialogFragment {
 
         @Override
         public void onFinish() {
-            //todo send information about having no time for answer
             progressBar.setProgress(0);
-
             getDialog().dismiss();
         }
     }

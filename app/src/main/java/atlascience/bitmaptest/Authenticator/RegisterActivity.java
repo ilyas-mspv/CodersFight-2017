@@ -1,4 +1,4 @@
-package atlascience.bitmaptest.Auth;
+package atlascience.bitmaptest.Authenticator;
 
 
 import android.content.Intent;
@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.google.gson.JsonObject;
 
@@ -52,27 +51,41 @@ public class RegisterActivity  extends AppCompatActivity {
        final String user = username.getText().toString();
        final String mail = email.getText().toString();
        final String pass = password.getText().toString();
+        if (user.length() < 8) {
+            if (pass.length() > 4) {
+                if (mail.contains("@") && mail.contains(".")) {
+                    AppController.getApi().addUser("addUser", user, mail, pass)
+                            .enqueue(new Callback<JsonObject>() {
+                                         @Override
+                                         public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                                             String r = response.body().toString();
 
+                                             if (!r.contains("User exists")) {
+                                                 if (r.contains("User created")) {
+                                                     login(mail, pass);
+                                                 }
+                                             } else {
+                                                 sign_up.setError("User is already registered.");
+                                             }
 
-        AppController.getApi().addUser("addUser", user, mail, pass)
-                .enqueue(new Callback<JsonObject>() {
-                    @Override
-                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                        String r = response.body().toString();
-                        if(r.contains("User created")){
-                            login(mail,pass);
-                        }else{
-                            Toast.makeText(getApplicationContext(),"Error. Try again later",Toast.LENGTH_SHORT).show();
-                        }
+                                         }
 
-                    }
+                                         @Override
+                                         public void onFailure(Call<JsonObject> call, Throwable t) {
 
-                    @Override
-                    public void onFailure(Call<JsonObject> call, Throwable t) {
-
-                    }
+                                         }
+                                     }
+                            );
+                } else {
+                    email.setError("Invalid email");
                 }
-                );
+            } else {
+                password.setError("Password is too small");
+            }
+        } else {
+            username.setError("Username should be less than 8 characters");
+        }
+
     }
 
     private void login(final String email,final String password) {
@@ -82,7 +95,6 @@ public class RegisterActivity  extends AppCompatActivity {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 User user = new User(response);
                 session.createLoginSession(user.getId(),user.getUsername(),email);
-
                 Intent i = new Intent(RegisterActivity.this, ProfileActivity.class);
                 startActivity(i);
                 finish();

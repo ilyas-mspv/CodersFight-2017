@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
+    android:paddingRight="15dp">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/queue_cardview"
+        android:layout_width="200dp"
+        android:layout_height="120dp"
+        android:clickable="true"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="6dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <Button
+                android:id="@+id/button_disagree_queue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:background="@null"
+                android:text="NO" />
+
+            <Button
+                android:id="@+id/button_agree_queue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/button_disagree_queue"
+                android:layout_toEndOf="@+id/user_id_request_queue"
+                android:layout_toLeftOf="@+id/button_disagree_queue"
+                android:layout_toRightOf="@+id/user_id_request_queue"
+                android:background="@null"
+                android:text="YES" />
+
+            <TextView
+                android:id="@+id/text_content_queue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_margin="10dp"
+                android:text="USERNAME wants to play with You." />
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/button_agree_queue"
+                android:layout_alignLeft="@+id/text_content_queue"
+                android:layout_alignStart="@+id/text_content_queue"
+                android:text="Do you want to play with him?" />
+
+            <TextView
+                android:id="@+id/user_id_request_queue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/text_content_queue"
+                android:text="TextView"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+</LinearLayout>

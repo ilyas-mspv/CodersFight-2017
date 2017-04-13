@@ -9,8 +9,8 @@ import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.StringTokenizer;
 
-import atlascience.bitmaptest.Activities.MainActivity;
 import atlascience.bitmaptest.Activities.ProfileActivity;
 
 public class Game {
@@ -32,7 +32,7 @@ public class Game {
     public Game(Context context) {
         sharPref = context.getSharedPreferences(PREF_NAME,Context.MODE_PRIVATE);
         editor = sharPref.edit();
-        this.context = context;
+        Game.context = context;
         zones=new ArrayList<Integer>();
     }
 
@@ -51,8 +51,6 @@ public class Game {
         data.put(KEY_START_ZONE_2, String.valueOf(sharPref.getInt(KEY_START_ZONE_2,Integer.parseInt(String.valueOf(0)))));
         data.put("zone1", String.valueOf(sharPref.getInt("zone1",0)));
         data.put("zone2", String.valueOf(sharPref.getInt("zone2",0)));
-
-
 
         return data;
     }
@@ -87,11 +85,72 @@ public class Game {
         context.startActivity(i);
     }
 
-
-    public void go_game(){
-        Intent i = new Intent(context, MainActivity.class);
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(i);
+    public static void set_request(int user_id, String username) {
+        editor.putInt("user_id", user_id);
+        editor.putString("username", username);
+        editor.commit();
     }
+
+    public static HashMap<String, String> get_request() {
+        HashMap<String, String> data = new HashMap<>();
+        data.put("user_id", String.valueOf(sharPref.getInt("user_id", 0)));
+        data.put("username", sharPref.getString("username", null));
+
+        return data;
+    }
+
+    public static void set_approval(int user_id, String username, String is_true) {
+        editor.putInt("user_id", user_id);
+        editor.putString("username", username);
+        editor.putString("is_true", is_true);
+        editor.commit();
+    }
+
+    public static HashMap<String, String> get_approval() {
+        HashMap<String, String> data = new HashMap<>();
+        data.put("user_id", String.valueOf(sharPref.getInt("user_id", 0)));
+        data.put("username", sharPref.getString("username", null));
+        data.put("is_true", sharPref.getString("is_true", null));
+
+        return data;
+    }
+
+    public static void delete_request() {
+        editor.clear();
+        editor.commit();
+    }
+
+
+    public static void setMapAreas(int zone, int user_id) {
+        int[] areas = new int[5];
+        areas[0] = 0;
+        areas[1] = 0;
+        areas[2] = 0;
+        areas[3] = 0;
+        areas[4] = 0;
+        areas[zone - 1] = user_id;
+
+        StringBuilder str = new StringBuilder();
+        for (int i = 0; i < areas.length; i++) {
+            str.append(areas[i]).append(",");
+        }
+        editor.putString("areas", str.toString());
+        editor.commit();
+    }
+
+    public static boolean areAreasFull() {
+        HashMap<String, String> data = new HashMap<>();
+        String savedString = data.put("areas", sharPref.getString("areas", null));
+        StringTokenizer st = new StringTokenizer(savedString, ",");
+        int[] areas = new int[4];
+        for (int i = 0; i < 4; i++) {
+            areas[i] = Integer.parseInt(st.nextToken());
+        }
+        boolean is_full = false;
+        for (int i = 0; i < areas.length; i++) {
+            if (areas[i] != 0) is_full = true;
+        }
+        return is_full;
+    }
+
 }

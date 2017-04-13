@@ -1,42 +1,24 @@
-package atlascience.bitmaptest.Auth;
-
-import java.net.InetAddress;
-import java.util.HashMap;
+package atlascience.bitmaptest.Authenticator;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
-import atlascience.bitmaptest.Auth.LoginActivity;
+import java.util.HashMap;
 
 public class SessionManager {
 
-    SharedPreferences pref;
-    Editor editor;
-    Context _context;
-    int PRIVATE_MODE = 0;
-    private static final String PREF_NAME = "User";
-    private static final String IS_LOGIN = "IsLoggedIn";
     public static final String KEY_NAME = "username";
     public static final String KEY_EMAIL = "email";
     public static final String KEY_ID = "id";
     public static final String KEY_TOKEN = "token";
-
-    public static boolean isInternetAvailable() {
-        try {
-            InetAddress ipAddr = InetAddress.getByName("google.com");
-           if(ipAddr.equals("")){
-               return false;
-           }else{
-               return true;
-           }
-
-        } catch (Exception e) {
-            return false;
-        }
-
-    }
+    private static final String PREF_NAME = "User";
+    private static final String IS_LOGIN = "IsLoggedIn";
+    private SharedPreferences pref;
+    private Editor editor;
+    private Context _context;
+    private int PRIVATE_MODE = 0;
 
     public SessionManager(Context context){
         this._context = context;
@@ -98,9 +80,5 @@ public class SessionManager {
     public boolean isLoggedIn(){
         return pref.getBoolean(IS_LOGIN, false);
     }
-
-
-
-
 
 }

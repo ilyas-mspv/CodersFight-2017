@@ -8,10 +8,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
 
+import java.util.HashMap;
 import java.util.List;
 
 import atlascience.bitmaptest.Adapters.RatingAdapter;
 import atlascience.bitmaptest.AppController;
+import atlascience.bitmaptest.Authenticator.SessionManager;
 import atlascience.bitmaptest.Models.Rating.Rating;
 import atlascience.bitmaptest.Models.Rating.RatingResponse;
 import atlascience.bitmaptest.R;
@@ -63,11 +65,14 @@ public class RatingActivity extends AppCompatActivity {
     }
 
     public void get_list() {
-        AppController.getApi().getAllUser("getAllUser").enqueue(new Callback<RatingResponse>() {
+        SessionManager session = new SessionManager(getApplicationContext());
+        HashMap<String, String> d = session.getUserDetails();
+
+        AppController.getApi().getAllUser("getAllUser", Integer.parseInt(d.get(SessionManager.KEY_ID))).enqueue(new Callback<RatingResponse>() {
             @Override
             public void onResponse(Call<RatingResponse> call, Response<RatingResponse> response) {
                 List<Rating> users = response.body().getResults();
-                recyclerView.setAdapter(new RatingAdapter(users, R.layout.row_rating, getApplicationContext()));
+                recyclerView.setAdapter(new RatingAdapter(users, getApplicationContext()));
             }
 
             @Override

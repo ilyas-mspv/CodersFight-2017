@@ -11,7 +11,14 @@
         android:layout_marginTop="10dp">
 
         <TextView
-            android:id="@+id/order_number"
+            android:id="@+id/id_rating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/order_number_queue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
