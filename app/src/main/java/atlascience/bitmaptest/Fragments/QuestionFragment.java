@@ -21,6 +21,7 @@ import java.util.HashMap;
 
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
+import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.Models.Game;
 import atlascience.bitmaptest.Models.Question;
 import atlascience.bitmaptest.R;
@@ -45,15 +46,8 @@ public class QuestionFragment extends DialogFragment {
     int timer_user;
     int zone;
 
-    boolean isCallable = false;
-    boolean is_success_answer = false;
-
-    private BroadcastReceiver mRegistrationBroadcastReceiver;
-
-
-    public QuestionFragment(int user_id, int move_user_id) {
+    public QuestionFragment(int user_id) {
         u_id = user_id;
-        QuestionFragment.move_user_id = move_user_id;
     }
 
     @Nullable
@@ -114,7 +108,7 @@ public class QuestionFragment extends DialogFragment {
         answer4_textView.setText(answer4);
 
 
-        url = "http://codfight.atlascience.ru/code/" + question + ".html";
+        url = Constants.URLS.QUESTION_URL + question + ".html";
         question_content.setWebViewClient(new MyBrowser());
         question_content.loadUrl(url);
 
@@ -139,7 +133,7 @@ public class QuestionFragment extends DialogFragment {
                     Integer.parseInt(game_round_id),
                     Integer.parseInt(user_id1),
                     (r_time * 1000) - timer_user,
-                    answer, move_user_id
+                    answer
             ).enqueue(new Callback<JSONObject>() {
                 @Override
                 public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
@@ -156,7 +150,7 @@ public class QuestionFragment extends DialogFragment {
                     Integer.parseInt(game_round_id),
                     Integer.parseInt(user_id2),
                     (r_time * 1000) - timer_user,
-                    answer, move_user_id
+                    answer
             ).enqueue(new Callback<JSONObject>() {
                 @Override
                 public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {

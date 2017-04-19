@@ -78,6 +78,13 @@
                 android:text="Rating" />
 
             <Button
+                android:id="@+id/provide_question"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Provide question"
+                android:visibility="gone" />
+
+            <Button
                 android:id="@+id/log_out"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -85,6 +92,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/knowledge_btn_profile"
                 android:text="Logout" />
+
         </LinearLayout>
 
 

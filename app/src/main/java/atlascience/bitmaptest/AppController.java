@@ -35,7 +35,7 @@ public class AppController  extends Application{
         OkHttpClient client = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 
         retrofit = new Retrofit.Builder()
-                .baseUrl("http://codfight.atlascience.ru/")
+                .baseUrl(Constants.URLS.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client)
                 .build();

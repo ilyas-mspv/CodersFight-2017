@@ -38,7 +38,6 @@ public class RatingActivity extends AppCompatActivity {
         initRecyclerView();
         get_list();
 
-
     }
 
     public void initRecyclerView() {
@@ -68,7 +67,7 @@ public class RatingActivity extends AppCompatActivity {
         SessionManager session = new SessionManager(getApplicationContext());
         HashMap<String, String> d = session.getUserDetails();
 
-        AppController.getApi().getAllUser("getAllUser", Integer.parseInt(d.get(SessionManager.KEY_ID))).enqueue(new Callback<RatingResponse>() {
+        AppController.getApi().getAllUser("getAllUserByRating", Integer.parseInt(d.get(SessionManager.KEY_ID))).enqueue(new Callback<RatingResponse>() {
             @Override
             public void onResponse(Call<RatingResponse> call, Response<RatingResponse> response) {
                 List<Rating> users = response.body().getResults();

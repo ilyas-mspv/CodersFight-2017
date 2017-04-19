@@ -1,43 +1,41 @@
 package atlascience.bitmaptest.Models.Knowledge;
 
 
+import android.content.Context;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+
+import org.json.JSONObject;
 
 import java.util.List;
 
+import retrofit2.Response;
+
 public class Topics {
 
-    @SerializedName("topic")
-    private String topic;
-    @SerializedName("content")
+    JsonObject res;
     private String content;
+    private  String topic;
 
-    private List<Topics> topicsList;
+    public Topics(Context context, Response<JsonObject> response) {
+        res = response.body();
 
-    public Topics(String topics, String content) {
-        this.topic = topics;
-        this.content = content;
     }
 
-    public String getContent() {
-        return content;
+    public JsonArray getData(){
+        return res.get("topics").getAsJsonArray();
+    }
+    public int size(){
+        return getData().size();
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public String getContent(int position) {
+        return getData().get(position).getAsJsonObject().get("content").getAsString();
     }
 
-    public String getTopics() {
-        return topic;
+    public String getTopic(int position) {
+        return getData().get(position).getAsJsonObject().get("topic").getAsString();
     }
-
-    public void setTopics(String topics) {
-        this.topic = topics;
-    }
-
-    public List<Topics> getResults() {
-        return topicsList;
-    }
-
-
 }

@@ -15,16 +15,12 @@ import atlascience.bitmaptest.R;
 
 public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.TopicsViewHolder> {
 
-    private List<Topics> topics = new ArrayList<>();
+    private Topics topics;
     private Context context;
 
-    public TopicsAdapter(List<Topics> topics, Context context) {
+    public TopicsAdapter(Topics topics, Context context) {
         this.topics = topics;
         this.context = context;
-    }
-
-    public List<Topics> getList() {
-        return this.topics;
     }
 
     @Override
@@ -35,8 +31,8 @@ public class TopicsAdapter extends RecyclerView.Adapter<TopicsAdapter.TopicsView
 
     @Override
     public void onBindViewHolder(TopicsViewHolder holder, int position) {
-        holder.topic.setText(topics.get(position).getTopics());
-        holder.content.setText(topics.get(position).getContent());
+        holder.topic.setText(topics.getTopic(position));
+        holder.content.setText(topics.getContent(position));
     }
 
     @Override

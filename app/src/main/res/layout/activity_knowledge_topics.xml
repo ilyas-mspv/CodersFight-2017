@@ -25,7 +25,7 @@
                 android:layout_gravity="center"
                 android:fontFamily="sans-serif"
                 android:text="Topics"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textAppearance="@style/TextAppearance.AppCompat.Menu"
                 android:textSize="18sp" />
         </android.support.v7.widget.Toolbar>
 
@@ -46,7 +46,9 @@
             android:id="@+id/recyclerview_topics"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:clickable="true" />
+            android:layout_margin="5dp"
+            android:clickable="true"
+            android:scrollbars="vertical" />
     </RelativeLayout>
 
 

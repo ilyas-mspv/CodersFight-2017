@@ -12,12 +12,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.JsonObject;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONObject;
 
@@ -26,13 +30,16 @@ import java.util.HashMap;
 
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
+import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.Fragments.AnswerResultFragment;
 import atlascience.bitmaptest.Fragments.QuestionFragment;
 import atlascience.bitmaptest.Models.Game;
 import atlascience.bitmaptest.Models.Question;
+import atlascience.bitmaptest.Models.Results;
 import atlascience.bitmaptest.Models.Zones;
 import atlascience.bitmaptest.R;
 import atlascience.bitmaptest.Services.Config;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,9 +52,10 @@ public class MainActivity extends AppCompatActivity {
     FragmentManager fm = getSupportFragmentManager();
     Bundle bundle = new Bundle();
     boolean doublePress = false;
-    boolean isTouched = false;
-    TextView textView_user_id1, textView_user_id2, textview_logs,test_logs,test_steps;
+    TextView textView_user_id1, textView_user_id2, textview_logs,test_logs;
     ImageView r1,r2,r3,r4,r5;
+    ImageView user1_photo,user2_photo;
+    String photo_user1,photo_user2;
 
     //users' data
     String  game_id,name,
@@ -55,9 +63,12 @@ public class MainActivity extends AppCompatActivity {
             user_id1, user_id2,
             start_zone1, start_zone2,
             username1, username2;
-
     int move_user_id;
-private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
+    boolean first = true;
+
+    int stepsCounter = 0;
+    int[] areas = new int[5];
+    private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
 
         @Override
         public boolean onTouch(final View v, MotionEvent event) {
@@ -74,17 +85,16 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
             else {
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        if (!isMyZone(v.getId())) {
-                            if(isCapital(get_touched(v.getId()))){
-                                Toast.makeText(getApplicationContext(),"selected is capital",Toast.LENGTH_SHORT).show();
-                            }else{
-                                choose_land(v.getId());
-                            }
 
+                        if(checkAreas()){
+                            if (!isMyZone(v.getId())) {
+                                choose_land(v.getId());
+                            }else{
+                                Toast.makeText(getApplicationContext(),"you can't capture your zone",Toast.LENGTH_SHORT).show();
+                            }
                         }else{
-                            Toast.makeText(getApplicationContext(),"my zone",Toast.LENGTH_SHORT).show();
+                            choose_land(v.getId());
                         }
-                        isTouched = true;
 
                         break;
                     case MotionEvent.ACTION_CANCEL:
@@ -101,10 +111,8 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
             }
         }
     };
-    int[] areas = new int[5];
     int zone_1, zone_2;
     boolean is_success_answer = false;
-    int click_counter = 0;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
     @Override
@@ -112,8 +120,6 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         session = new SessionManager(getApplicationContext());
-        test_logs = (TextView) findViewById(R.id.test_logs);
-        test_steps = (TextView) findViewById(R.id.test_steps);
 
         initMap();
         notification_receiver();
@@ -213,8 +219,7 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
                             double time2 = Double.parseDouble(zones_data.get(Zones.KEY_TIME2));
                             int answer1 = Integer.parseInt(zones_data.get(Zones.KEY_ANSWER1));
                             int answer2 = Integer.parseInt(zones_data.get(Zones.KEY_ANSWER2));
-                            boolean win1 = Boolean.parseBoolean(zones_data.get("win1"));
-                            boolean win2 = Boolean.parseBoolean(zones_data.get("win2"));
+
 
                             Log.i(TAG, String.valueOf(winner));
                             Log.i(TAG, String.valueOf(zone));
@@ -227,7 +232,7 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
                             int u_id2 = Integer.parseInt(user_id2);
 
                             create_result_dialog(winner, time1, time2, answer1, answer2,correct1,correct2);
-                            setArea( winner, zone, u_id1, u_id2,win1,win2);
+                            setArea( winner, zone, u_id1, u_id2);
 
                             break;
                     }
@@ -271,10 +276,14 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
         textView_user_id1 = (TextView) findViewById(R.id.user_id1);
         textView_user_id2 = (TextView) findViewById(R.id.user_id2);
         textview_logs = (TextView) findViewById(R.id.logs_main);
+        user1_photo = (ImageView) findViewById(R.id.game_user_id1_photo);
+        user2_photo = (ImageView) findViewById(R.id.game_user_id2_photo);
 
         //setting user's default data
         HashMap<String, String> user = session.getUserDetails();
         name = user.get(SessionManager.KEY_NAME);
+        photo_user1 = Constants.URLS.GAME_PROFILE_URL+user.get(SessionManager.KEY_IMAGE_URL)+".jpg";
+
 
         try{
             Game game = new Game(getApplicationContext());
@@ -287,13 +296,22 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
             start_zone2 = data.get(Game.KEY_START_ZONE_2);
             username1 = data.get(Game.KEY_USERNAME_1);
             username2 = data.get(Game.KEY_USERNAME_2);
+            photo_user2 = Constants.URLS.GAME_PROFILE_URL + data.get(Game.KEY_USER2_PHOTO) + ".jpg";
+
         }catch (Error e){
             Log.e(TAG,e.toString());
         }
 
         init_first_player();
 
-        //TODO switch to background opacity
+        //TODO change feature
+//        ImageView[] zonesImageView = new ImageView[] {r1, r2, r3, r4, r5};
+//        int[] zonesDrawables = new int[] {R.drawable.map_area_1_green_capital, R.drawable.map_area_1_green_capital,R.drawable.map_area_1_green_capital,R.drawable.map_area_1_green_capital,R.drawable.map_area_1_green_capital};
+//
+//        for (int i = 0; i < 5; i++) {
+//            zonesImageView[i].setImageResource(zonesDrawables[i]);
+//        }
+
         switch (zone_1) {
             case 1:
                 r1.setImageResource(R.drawable.map_area_1_green_capital);
@@ -329,6 +347,11 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
                 r5.setImageResource(R.drawable.map_area_5_red_capital);
                 break;
         }
+
+        if(!photo_user1.equals("0"))
+            Picasso.with(getApplicationContext()).load(photo_user1).into(user1_photo);
+        if(!photo_user2.equals("0"))
+            Picasso.with(getApplicationContext()).load(photo_user2).into(user2_photo);
 
     }
 
@@ -401,7 +424,6 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
     public void setOnClickListenersForUser(boolean isTouchable) {
 
         if (isTouchable) {
-
             r1.setEnabled(true);
             r2.setEnabled(true);
             r3.setEnabled(true);
@@ -415,13 +437,11 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
             r5.setOnTouchListener(rOnTouch);
 
         }else{
-
             r1.setEnabled(false);
             r2.setEnabled(false);
             r3.setEnabled(false);
             r4.setEnabled(false);
             r5.setEnabled(false);
-
         }
     }
 
@@ -447,16 +467,14 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
         return zone == Integer.parseInt(start_zone1) || zone == Integer.parseInt(start_zone2);
     }
 
-    private void setArea(int winner,int zone,int u_id1,int u_id2,boolean win1,boolean win2) {
+    private void setArea(int winner,int zone,int u_id1,int u_id2) {
         Game game = new Game(getApplicationContext());
 
         areas[Integer.parseInt(start_zone1)-1] = u_id1;
         areas[Integer.parseInt(start_zone2)-1] = u_id2;
+        stepsCounter++;
+        if(isStepAvailable(stepsCounter)){
 
-        int steps = 10;
-
-        if(steps>0){
-            steps--;
             if (username1.equals(name)) {
                 //user1 green
                 //user2 red
@@ -465,10 +483,11 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
                     areas[zone - 1] = u_id1;
                     set_green_zone(zone);
 
-                    test_logs.setText("areas array: " + Arrays.toString(areas));
+//                    test_logs.setText("areas array: " + Arrays.toString(areas));
 
                     textview_logs.setTextColor(getResources().getColor(R.color.green));
                     textview_logs.setText(username1 + "'s move!");
+                    move_user_id = u_id1;
                     setOnClickListenersForUser(true);
 
                 }
@@ -477,25 +496,39 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
                     set_red_zone(zone);
                     areas[zone - 1] = u_id2;
 
-                    test_logs.setText("areas array: " + Arrays.toString(areas));
+//                    test_logs.setText("areas array: " + Arrays.toString(areas));
 
                     textview_logs.setTextColor(getResources().getColor(R.color.red));
                     textview_logs.setText(username2 + "'s move!");
+                    move_user_id = u_id2;
                     setOnClickListenersForUser(false);
                 }
                 if (winner == 0) {
                     if (move_user_id == u_id1) {
                         textview_logs.setTextColor(getResources().getColor(R.color.red));
                         textview_logs.setText(username2 + "'s" + " move!");
+                        move_user_id = u_id2;
                         setOnClickListenersForUser(false);
                     } else {
                         textview_logs.setTextColor(getResources().getColor(R.color.green));
                         textview_logs.setText(username1 + "'s" + " move!");
+                        move_user_id = u_id1;
                         setOnClickListenersForUser(true);
                     }
-                    Toast.makeText(getApplicationContext(), "no one won", Toast.LENGTH_SHORT).show();
                 }
-
+//                if(checkAreas()){
+//                    Toast.makeText(MainActivity.this, "areas not full", Toast.LENGTH_SHORT).show();
+//                }else{
+//                    Toast.makeText(MainActivity.this, "areas are full", Toast.LENGTH_SHORT).show();
+//                    Handler handlerUI = new Handler();
+//                    handlerUI.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            if (first)
+//                            notifyCapture(first);
+//                        }
+//                    },1000);
+//                }
             } else {
                 //user1 red
                 //user2 green
@@ -504,10 +537,11 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
                     areas[zone - 1] = u_id2;
                     set_green_zone(zone);
 
-                    test_logs.setText("areas array: " + Arrays.toString(areas));
+//                    test_logs.setText("areas array: " + Arrays.toString(areas));
 
                     textview_logs.setTextColor(getResources().getColor(R.color.green));
                     textview_logs.setText(username2 + "'s" + " move!");
+                    move_user_id = u_id2;
                     setOnClickListenersForUser(true);
 
                 }
@@ -516,10 +550,11 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
                     set_red_zone(zone);
                     areas[zone - 1] = u_id1;
 
-                    test_logs.setText("areas array: " + Arrays.toString(areas));
+//                    test_logs.setText("areas array: " + Arrays.toString(areas));
 
                     textview_logs.setTextColor(getResources().getColor(R.color.red));
                     textview_logs.setText(username1 + "'s" + " move!");
+                    move_user_id = u_id1;
                     setOnClickListenersForUser(false);
 
                 }
@@ -527,19 +562,77 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
                     if (move_user_id == u_id2) {
                         textview_logs.setTextColor(getResources().getColor(R.color.red));
                         textview_logs.setText(username1 + "'s" + " move!");
+                        move_user_id = u_id1;
+
                         setOnClickListenersForUser(false);
                     } else {
                         textview_logs.setTextColor(getResources().getColor(R.color.green));
                         textview_logs.setText(username2 + "'s" + " move!");
+                        move_user_id = u_id2;
                         setOnClickListenersForUser(true);
                     }
-
-                    Toast.makeText(getApplicationContext(), "no one won", Toast.LENGTH_SHORT).show();
                 }
+
+//                if(checkAreas()){
+//                    Toast.makeText(MainActivity.this, "areas not full", Toast.LENGTH_SHORT).show();
+//                }else{
+//                    Toast.makeText(MainActivity.this, "areas are full", Toast.LENGTH_SHORT).show();
+//                    Handler handlerUI = new Handler();
+//                    handlerUI.postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            if(first) notifyCapture(first);
+//                        }
+//                    },1000);
+//
+//                }
             }
         }else{
-            test_steps.setText("reached the end");
+            //end round
+            AppController.getApi().set_zones("get_zones",Integer.parseInt(game_id),zones1(),zones2()).enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    Intent i = new Intent(MainActivity.this, ResultsActivity.class);
+                    startActivity(i);
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+
+                }
+            });
+
         }
+    }
+
+    private int zones1(){
+        int c = 0;
+        for (int i = 0; i < areas.length; i++) {
+            if(areas[i]==Integer.parseInt(user_id1)){
+                c++;
+            }
+        }
+        return c;
+    }
+
+    private int zones2(){
+        int c = 0;
+        for (int i = 0; i < areas.length; i++) {
+            if(areas[i]==Integer.parseInt(user_id2)){
+                c++;
+            }
+        }
+        return c;
+    }
+
+    private void notifyCapture(boolean f) {
+//        int i = 0;
+//        if(i==0){
+//            Toast toast = Toast.makeText(getApplicationContext(), "Defend or capture the base", Toast.LENGTH_LONG);
+//            toast.setGravity(Gravity.TOP, 0, 0);
+//            toast.show();
+//            i++;
+//        }
     }
 
     private void set_red_zone(int zone) {
@@ -580,51 +673,8 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
                     r5.setImageResource(R.drawable.map_area_5_red_not_capital);
                     break;
             }
-            Toast.makeText(getApplicationContext(), "capital", Toast.LENGTH_SHORT).show();
-    }
-    }
 
-    private void set_green_zone(int zone) {
-        if(!isCapital(zone)){
-            switch (zone) {
-                case 1:
-                    r1.setImageResource(R.drawable.map_area_1_green_not_capital);
-                    break;
-                case 2:
-                    r2.setImageResource(R.drawable.map_area_2_green_not_capital);
-                    break;
-                case 3:
-                    r3.setImageResource(R.drawable.map_area_3_green_not_capital);
-                    break;
-                case 4:
-                    r4.setImageResource(R.drawable.map_area_4_green_not_capital);
-                    break;
-                case 5:
-                    r5.setImageResource(R.drawable.map_area_5_green_not_capital);
-                    break;
-            }
-        }else{
-            //color capitals
-            switch (zone) {
-                case 1:
-                    r1.setImageResource(R.drawable.map_area_1_green_capital);
-                    break;
-                case 2:
-                    r2.setImageResource(R.drawable.map_area_2_green_capital);
-                    break;
-                case 3:
-                    r3.setImageResource(R.drawable.map_area_3_green_capital);
-                    break;
-                case 4:
-                    r4.setImageResource(R.drawable.map_area_4_green_capital);
-                    break;
-                case 5:
-                    r5.setImageResource(R.drawable.map_area_5_green_capital);
-                    break;
-            }
-            Toast.makeText(getApplicationContext(), "capital", Toast.LENGTH_SHORT).show();
-        }
-
+    }
     }
 
     private void set_green_zone(int zone) {
@@ -665,17 +715,34 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
                     r5.setImageResource(R.drawable.map_area_5_green_capital);
                     break;
             }
-            Toast.makeText(getApplicationContext(), "capital", Toast.LENGTH_SHORT).show();
         }
 
     }
 
     private boolean checkAreas(){
-        boolean is_full = false;
+        int count = 0;
         for (int i = 0; i < areas.length; i++) {
-            is_full = areas[i] != 0;
+            if(areas[i]!=0){
+               count++;
+            }
         }
-        return is_full;
+        return areas.length != count;
+    }
+
+    public boolean isStepAvailable(int move){
+        int steps = 5;
+        //continue
+//end round
+        return move < steps;
+    }
+
+    public boolean isMyCapital(int id){
+        int i = get_touched(id);
+        if(username1.equals(name)){
+            return i == Integer.parseInt(start_zone1);
+        }else{
+            return i == Integer.parseInt(start_zone2);
+        }
     }
 
     //override methods
@@ -705,7 +772,7 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
                 new IntentFilter(Config.REGISTRATION_COMPLETE));
 
         // register new push message receiver
-        // by doing this, the activity will be notified each time a new message arrives
+        // by doing this, the activity will be notified each time areasFlag new message arrives
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(Config.PUSH_NOTIFICATION));
 
@@ -749,14 +816,13 @@ private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
         }else{
             my_id = Integer.parseInt(user_id2);
         }
-        QuestionFragment questionFragment = new QuestionFragment(my_id,move_user_id);
+        QuestionFragment questionFragment = new QuestionFragment(my_id);
         questionFragment.setArguments(bundle);
         questionFragment.show(fm,"tag");
     }
-private void create_result_dialog(int winner,double time1, double time2,int answer1,int answer2,String correct1,String correct2) {
 
+    private void create_result_dialog(int winner,double time1, double time2,int answer1,int answer2,String correct1,String correct2) {
         AnswerResultFragment fragment = new AnswerResultFragment(winner,time1,time2,answer1,answer2,correct1,correct2);
         fragment.show(fm,"tag");
     }
-
 }

@@ -45,7 +45,6 @@ public class MessagingService extends FirebaseMessagingService {
 
     }
 
-
     private void handleDataMessage(JSONObject json) {
         Log.e(TAG, "push json: " + json.toString());
 
@@ -196,6 +195,9 @@ public class MessagingService extends FirebaseMessagingService {
             String zone1 = zone_1.toString();
             String zone2 = zone_2.toString();
 
+            String user2_photo = json.getString("user2_photo");
+
+
             Log.e(TAG, zone1);
             Log.e(TAG, zone2);
             Log.i(TAG, String.valueOf(game_id));
@@ -207,7 +209,7 @@ public class MessagingService extends FirebaseMessagingService {
             Log.i(TAG, username1);
             Log.i(TAG, username2);
 
-            Game.create_game(game_id, user_id1, user_id2, first_player, start_zone1, start_zone2, username1, username2, Integer.parseInt(zone1), Integer.parseInt(zone2));
+            Game.create_game(game_id, user_id1, user_id2, first_player, start_zone1, start_zone2, username1, username2, Integer.parseInt(zone1), Integer.parseInt(zone2),user2_photo);
 
 //
             startActivity(new Intent(MessagingService.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));

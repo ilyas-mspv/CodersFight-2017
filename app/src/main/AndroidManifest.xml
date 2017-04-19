@@ -110,9 +110,12 @@
                 android:value="atlascience.bitmaptest.Activities.KnowledgeTopicsActivity" />
         </activity>
         <activity
-            android:name=".Activities.RoundResultActivity"
-            android:theme="@style/AppTheme"></activity>
-        <activity android:name=".Activities.StatisticsActivity"></activity>
+            android:name=".Activities.ResultsActivity"
+            android:theme="@style/AppTheme">
+
+        </activity>
+        <activity android:name=".Activities.StatisticsActivity"/>
+        <activity android:name=".Activities.ProvideQuestionActivity"/>
     </application>
 
 </manifest>

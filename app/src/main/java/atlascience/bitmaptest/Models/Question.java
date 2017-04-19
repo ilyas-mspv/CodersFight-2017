@@ -69,4 +69,17 @@ public class Question {
         editor.clear();
         editor.commit();
     }
+
+
+    public static  void create_content_ses(String content,String topic){
+        editor.putString("content",content);
+        editor.putString("topic",topic);
+        editor.commit();
+    }
+    public static  HashMap<String,String> getContentSes(){
+        HashMap<String,String> data = new HashMap<>();
+        data.put("content",sharedPreferences.getString("content",null));
+        data.put("topic",sharedPreferences.getString("topic",null));
+        return data;
+    }
 }

@@ -11,8 +11,8 @@ public class Queue {
     private int order_number;
     @SerializedName("user_id")
     private int user_id;
-    @SerializedName("rating")
-    private int rating;
+    @SerializedName("photo")
+    private String photo_queue;
     @SerializedName("username")
     private String username;
 
@@ -32,12 +32,12 @@ public class Queue {
         this.user_id = user_id;
     }
 
-    public int getRating() {
-        return rating;
+    public String getPhoto_queue() {
+        return photo_queue;
     }
 
-    public void setRating(int rating) {
-        this.rating = rating;
+    public void setPhoto_queue(String photo_queue) {
+        this.photo_queue = photo_queue;
     }
 
     public String getUsername() {

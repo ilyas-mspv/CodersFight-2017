@@ -7,15 +7,17 @@ import android.support.v7.app.AppCompatActivity;
 import atlascience.bitmaptest.R;
 
 /**
- * Created by Ilyas on 05-Apr-17.
+ * Created by Ilyas on 18-Apr-17.
  */
 
-public class RoundResultActivity extends AppCompatActivity {
-
+public class ProvideQuestionActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_result);
+        setContentView(R.layout.activity_provide_question);
+
+        //TODO send question requests
+        //TODO edit and design layout  / ||
 
     }
 }

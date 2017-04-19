@@ -2,90 +2,153 @@ package atlascience.bitmaptest.Activities;
 
 
 import android.Manifest;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.JsonObject;
+import com.squareup.picasso.Picasso;
 
-import org.json.JSONObject;
+import net.gotev.uploadservice.MultipartUploadRequest;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.UUID;
 
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
+import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.R;
 import de.hdodenhof.circleimageview.CircleImageView;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    public final static int CAPTURE_IMAGE_ACTIVITY_CODE = 1034;
-    private static final String TAG = ProfileActivity.class.getSimpleName();
-    private static final int EXTERNAL_STORAGE_PERMISSION_CONSTANT = 100;
-    private static final int REQUEST_PERMISSION_SETTING = 101;
-    public final String APP_TAG = "CodersFight";
-    public String photoFileName = "profile_photo.jpg";
+    private static final int STORAGE_PERMISSION_CODE = 123;
+    //data
     SessionManager session;
-    Button logout, play_button, rating, knowledge, statistics;
+    HashMap<String,String> user;
+    //UI
+    Button logout, play_button, rating, knowledge, statistics,provide_question;
     TextView username;
-    ProgressDialog dialog;
-    HashMap<String, String> user;
-    //user's photo
-    CircleImageView profile_photo;
-    Bitmap imageBitmap;
-    String filePath;
-    File cameraFile;
-    private boolean sentToSettings = false;
-    private SharedPreferences permissionStatus;
+    ImageView profile_photo;
+    //image operations
+    private int PICK_IMAGE_REQUEST = 1;
+    private Bitmap bitmap;
+    private Uri filePath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        get_data();
+        initToolbar();
+        requestStoragePermission();
         init();
-        permissionStatus = getSharedPreferences("permissionStatus", MODE_PRIVATE);
+        get_data();
+    }
 
+    public void uploadMultipart() {
+        String path = getPath(filePath);
+
+        try {
+            String uploadId = UUID.randomUUID().toString();
+
+            new MultipartUploadRequest(this, uploadId, Constants.Profile.UPLOAD_URL)
+                    .addFileToUpload(path, "image")
+                    .addParameter("user_id",user.get(SessionManager.KEY_ID))
+                    .addParameter("name", user.get(SessionManager.KEY_NAME))
+                    .setMaxRetries(2)
+                    .startUpload();
+
+        } catch (Exception exc) {
+            Toast.makeText(this, exc.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public String getPath(Uri uri) {
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        String document_id = cursor.getString(0);
+        document_id = document_id.substring(document_id.lastIndexOf(":") + 1);
+        cursor.close();
+
+        cursor = getContentResolver().query(
+                android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                null, MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+        cursor.moveToFirst();
+        String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+        cursor.close();
+
+        return path;
+    }
+
+    private void requestStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+            return;
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+
+        }
+        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
+    }
+
+    private void initToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setLogo(R.mipmap.ic_launcher);
-}
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            filePath = data.getData();
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                profile_photo.setImageBitmap(bitmap);
+                uploadMultipart();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.profile_menu, menu);
-
         return true;
     }
 
@@ -96,7 +159,6 @@ public class ProfileActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "TODO", Toast.LENGTH_SHORT).show();
                 break;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -106,62 +168,15 @@ public class ProfileActivity extends AppCompatActivity {
         profile_photo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (ActivityCompat.checkSelfPermission(ProfileActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(ProfileActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                        //Show Information about why you need the permission
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
-                        builder.setTitle("Need Storage Permission");
-                        builder.setMessage("This app needs storage permission.");
-                        builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                                ActivityCompat.requestPermissions(ProfileActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXTERNAL_STORAGE_PERMISSION_CONSTANT);
-                            }
-                        });
-                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                        builder.show();
-                    } else if (permissionStatus.getBoolean(Manifest.permission.WRITE_EXTERNAL_STORAGE, false)) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
-                        builder.setTitle("Need Storage Permission");
-                        builder.setMessage("This app needs storage permission.");
-                        builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                                sentToSettings = true;
-                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                                intent.setData(uri);
-                                startActivityForResult(intent, REQUEST_PERMISSION_SETTING);
-                                Toast.makeText(getBaseContext(), "Go to Permissions to Grant Storage", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-                        builder.show();
-                    } else {
-                        //just request the permission
-                        ActivityCompat.requestPermissions(ProfileActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXTERNAL_STORAGE_PERMISSION_CONSTANT);
-                    }
+            select_photo();
+            }
+        });
 
-                    SharedPreferences.Editor editor = permissionStatus.edit();
-                    editor.putBoolean(Manifest.permission.WRITE_EXTERNAL_STORAGE, true);
-                    editor.commit();
-
-                } else {
-                    //You already have the permission, just go ahead.
-                    selectImage();
-                }
+        provide_question = (Button) findViewById(R.id.provide_question);
+        provide_question.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProfileActivity.this, ProvideQuestionActivity.class));
             }
         });
 
@@ -190,168 +205,38 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
-    private void selectImage() {
-        final CharSequence[] options = {"capture photo", "pick from gallery", "cancel"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (options[which].equals(options[0])) {
-                    Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
 
-                    String filepath = Environment.getExternalStorageDirectory().getPath();
-                    File file = new File(filepath);
-                    if (!file.exists()) {
-                        file.mkdir();
-                    }
-                    filepath = (file.getAbsolutePath() + "/" + System.currentTimeMillis() + ".jpg");
-                    File cameraFile = new File(filepath);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cameraFile));
-                    startActivityForResult(intent, 0);
-                } else if (options[which].equals(options[1])) {
-                    Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
-                    photoPickerIntent.setType("image/*");
-                    startActivityForResult(photoPickerIntent, 1);
-                } else if (options[which].equals(options[2])) {
-                    dialog.dismiss();
-                }
-            }
-        });
-        builder.show();
+    private void select_photo() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_PICK);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case 1:
-                if (resultCode == RESULT_OK) {
-                    Uri selectedImage = data.getData();
-                    String[] filePathColumn = {MediaStore.Images.Media.DATA};
-                    Cursor cursor = getContentResolver().query(selectedImage, filePathColumn, null, null, null);
-                    if (cursor.moveToFirst()) {
-                        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                        filePath = cursor.getString(columnIndex);
-                        imageBitmap = BitmapFactory.decodeFile(filePath);
-                        profile_photo.setImageBitmap(imageBitmap);
-                    }
-                    cursor.close();
-                    uploadTask();
-                }
-                break;
-            case 0:
-                if (resultCode == RESULT_OK) {
-                    filePath = cameraFile.toString();
-                    imageBitmap = BitmapFactory.decodeFile(filePath);
-                    profile_photo.setImageBitmap(imageBitmap);
-                    uploadTask();
-                }
-                break;
-            default:
-                break;
-        }
-
-        if (requestCode == REQUEST_PERMISSION_SETTING) {
-            if (ActivityCompat.checkSelfPermission(ProfileActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                //Got Permission
-                selectImage();
-            }
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == EXTERNAL_STORAGE_PERMISSION_CONSTANT) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //The External Storage Write Permission is granted to you... Continue your left job...
-                selectImage();
-            } else {
-                if (ActivityCompat.shouldShowRequestPermissionRationale(ProfileActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    //Show Information about why you need the permission
-                    AlertDialog.Builder builder = new AlertDialog.Builder(ProfileActivity.this);
-                    builder.setTitle("Need Storage Permission");
-                    builder.setMessage("This app needs storage permission");
-                    builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-
-
-                            ActivityCompat.requestPermissions(ProfileActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, EXTERNAL_STORAGE_PERMISSION_CONSTANT);
-
-
-                        }
-                    });
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-                    builder.show();
-                } else {
-                    Toast.makeText(getBaseContext(), "Unable to get Permission", Toast.LENGTH_LONG).show();
-                }
-            }
-        }
-    }
-
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        if (sentToSettings) {
-            if (ActivityCompat.checkSelfPermission(ProfileActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                //Got Permission
-                selectImage();
-            }
-        }
-    }
-
-
-    private void uploadTask() {
-        final ProgressDialog progress = new ProgressDialog(ProfileActivity.this);
-        progress.setMessage("Loading file..");
-        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progress.setIndeterminate(true);
-        progress.show();
-
-        File file = new File(filePath);
-        RequestBody requestFile =
-                RequestBody.create(MediaType.parse("multipart/form-data"), file);
-
-        MultipartBody.Part fileBody = MultipartBody.Part.createFormData("file", file.getName(), requestFile);
-        RequestBody method = RequestBody.create(MultipartBody.FORM, "upload_photo");
-        RequestBody username = RequestBody.create(MultipartBody.FORM, user.get(SessionManager.KEY_NAME));
-        AppController.getApi().upload_photo(method, username, fileBody).enqueue(new Callback<JSONObject>() {
-            @Override
-            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-                progress.dismiss();
-            }
-
-            @Override
-            public void onFailure(Call<JSONObject> call, Throwable t) {
-
-            }
-        });
-
-
-    }
-
-
 
     private void get_data() {
         session = new SessionManager(getApplicationContext());
-        username = (TextView) findViewById(R.id.username_profile);
         session.checkLogin();
+        username = (TextView) findViewById(R.id.username_profile);
+        if(session.isLoggedIn()) {
+            user = session.getUserDetails();
+            int a_status = Integer.parseInt(user.get(SessionManager.KEY_ACCOUNT_STATUS));
 
-        user = session.getUserDetails();
-        final String id = user.get(SessionManager.KEY_ID);
-        String name = user.get(SessionManager.KEY_NAME);
+            provide_question.setVisibility(View.GONE);
+            if (a_status == 0) {
+                //usual user
+            } else {
+                //teacher
+                provide_question.setVisibility(View.VISIBLE);
+            }
 
-        String token = FirebaseInstanceId.getInstance().getToken();
-        set_token(id, token);
-        session.create_token(token);
+            final String id = user.get(SessionManager.KEY_ID);
+            String name = user.get(SessionManager.KEY_NAME);
+            String photo_url = user.get(SessionManager.KEY_IMAGE_URL);
+            if(!photo_url.equals("")) update_photo_url();
+
+            String token = FirebaseInstanceId.getInstance().getToken();
+            set_token(id, token);
+            session.create_token(token);
 
             play_button = (Button) findViewById(R.id.game_play);
             play_button.setOnClickListener(new View.OnClickListener() {
@@ -359,28 +244,44 @@ public class ProfileActivity extends AppCompatActivity {
                 public void onClick(View v) {
 
                     server_add_to_queue(id);
-                    Intent i = new Intent(ProfileActivity.this,QueueActivity.class);
+                    Intent i = new Intent(ProfileActivity.this, QueueActivity.class);
                     startActivity(i);
 
                 }
             });
 
-        username.setText(name);
+            username.setText(name);
+        }
+    }
+
+    private void update_photo_url(){
+        AppController.getApi().update_url("update_url",user.get(SessionManager.KEY_ID)).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                JsonObject jsonObject = response.body();
+                String url = jsonObject.get("photo_url").getAsString();
+                if(!url.equals(""))
+                Picasso.with(ProfileActivity.this).load(url).error(R.drawable.default_user).into(profile_photo);
+            }
+
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
+
+            }
+        });
     }
 
     public void server_add_to_queue(final String id){
-        AppController.getApi().addtoQueue("add_to_queue",id)
-                .enqueue(new Callback<JsonObject>() {
-                    @Override
-                    public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+        AppController.getApi().addtoQueue("add_to_queue",id).enqueue(new Callback<JsonObject>() {
+            @Override
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+            }
 
-                    }
+            @Override
+            public void onFailure(Call<JsonObject> call, Throwable t) {
 
-                    @Override
-                    public void onFailure(Call<JsonObject> call, Throwable t) {
-
-                    }
-                });
+            }
+        });
     }
 
     public void set_token(String id,String token){

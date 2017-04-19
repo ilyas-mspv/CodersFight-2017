@@ -85,31 +85,27 @@ public class LoginActivity extends AppCompatActivity {
 
     private void log_in(final String email, String password) {
 
-        AppController.getApi().getUser("getUser", email, password).enqueue(new Callback<JsonObject>() {
-                                                                               @Override
-                                                                               public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                                                                                   if (!response.body().toString().contains("invalid password")) {
-                                                                                       if (!response.body().toString().contains("invalid email")) {
-                                                                                           User user = new User(response);
-                                                                                           session.createLoginSession(user.getId(), user.getUsername(), email);
-                                                                                           Intent i = new Intent(LoginActivity.this, ProfileActivity.class);
-                                                                                           startActivity(i);
-                                                                                           finish();
-                                                                                       } else {
-                                                                                           log_login.setText("Invalid email.");
-                                                                                       }
-                                                                                   } else {
-                                                                                       log_login.setText("Invalid password.");
-                                                                                   }
-
-
-                                                                               }
-
-                                                                               @Override
-                                                                               public void onFailure(Call<JsonObject> call, Throwable t) {
-
-                                                                               }
-                                                                           }
+        AppController.getApi().getUser("getUser", email, password)
+                .enqueue(new Callback<JsonObject>() {
+                    @Override public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                        if (!response.body().toString().contains("invalid password")) {
+                            if (!response.body().toString().contains("invalid email")) {
+                                User user = new User(response);
+                                session.createLoginSession(user.getId(), user.getUsername(), email,user.getUrl(),user.getStatus());
+                                Intent i = new Intent(LoginActivity.this, ProfileActivity.class);
+                                startActivity(i);
+                                finish();
+                            } else {
+                                log_login.setText("Invalid email.");
+                            }
+                        } else {
+                            log_login.setText("Invalid password.");
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<JsonObject> call, Throwable t) {
+                    }
+                }
         );
     }
 

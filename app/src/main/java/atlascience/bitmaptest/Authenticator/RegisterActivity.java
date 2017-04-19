@@ -1,9 +1,11 @@
 package atlascience.bitmaptest.Authenticator;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -15,11 +17,15 @@ import atlascience.bitmaptest.Activities.ProfileActivity;
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Models.User;
 import atlascience.bitmaptest.R;
+import atlascience.bitmaptest.Utils.GeneralDialogFragment;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RegisterActivity  extends AppCompatActivity {
+import static atlascience.bitmaptest.Models.Game.context;
+
+public class RegisterActivity  extends AppCompatActivity implements GeneralDialogFragment.OnDialogFragmentClickListener {
 
 
     EditText username,email,password;
@@ -51,7 +57,6 @@ public class RegisterActivity  extends AppCompatActivity {
        final String user = username.getText().toString();
        final String mail = email.getText().toString();
        final String pass = password.getText().toString();
-        if (user.length() < 8) {
             if (pass.length() > 4) {
                 if (mail.contains("@") && mail.contains(".")) {
                     AppController.getApi().addUser("addUser", user, mail, pass)
@@ -63,9 +68,13 @@ public class RegisterActivity  extends AppCompatActivity {
                                              if (!r.contains("User exists")) {
                                                  if (r.contains("User created")) {
                                                      login(mail, pass);
+                                                 }else{
+                                                     new SweetAlertDialog(RegisterActivity.this)
+                                                             .setTitleText("User is already registered")
+                                                             .setContentText("Try to login or create another one")
+                                                             .show();
+
                                                  }
-                                             } else {
-                                                 sign_up.setError("User is already registered.");
                                              }
 
                                          }
@@ -82,10 +91,6 @@ public class RegisterActivity  extends AppCompatActivity {
             } else {
                 password.setError("Password is too small");
             }
-        } else {
-            username.setError("Username should be less than 8 characters");
-        }
-
     }
 
     private void login(final String email,final String password) {
@@ -94,7 +99,7 @@ public class RegisterActivity  extends AppCompatActivity {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 User user = new User(response);
-                session.createLoginSession(user.getId(),user.getUsername(),email);
+                session.createLoginSession(user.getId(),user.getUsername(),email,user.getUrl(),user.getStatus());
                 Intent i = new Intent(RegisterActivity.this, ProfileActivity.class);
                 startActivity(i);
                 finish();
@@ -107,5 +112,14 @@ public class RegisterActivity  extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onOkClicked(GeneralDialogFragment dialog) {
+
+    }
+
+    @Override
+    public void onCancelClicked(GeneralDialogFragment dialog) {
+
+    }
 }
 

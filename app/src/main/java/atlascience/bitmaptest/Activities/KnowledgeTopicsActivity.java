@@ -9,14 +9,19 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
+
+import com.google.gson.JsonObject;
+import com.google.gson.internal.Streams;
 
 import java.util.List;
 
 import atlascience.bitmaptest.Adapters.TopicsAdapter;
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Models.Knowledge.Topics;
-import atlascience.bitmaptest.Models.Knowledge.TopicsResponse;
+import atlascience.bitmaptest.Models.Question;
 import atlascience.bitmaptest.R;
 import atlascience.bitmaptest.Utils.ItemClickSupport;
 import retrofit2.Call;
@@ -26,7 +31,7 @@ import retrofit2.Response;
 public class KnowledgeTopicsActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
-    List<Topics> topics;
+    Topics topics;
     TopicsAdapter topicsAdapter;
 
     @Override
@@ -47,17 +52,15 @@ public class KnowledgeTopicsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
 
-        AppController.getApi().getAllTopics("getAllTopics").enqueue(new Callback<TopicsResponse>() {
+        AppController.getApi().getAllTopics("getAllTopics").enqueue(new Callback<JsonObject>() {
             @Override
-            public void onResponse(Call<TopicsResponse> call, Response<TopicsResponse> response) {
-                topics = response.body().getResults();
-
-                topicsAdapter = new TopicsAdapter(topics, getApplicationContext());
-                recyclerView.setAdapter(topicsAdapter);
+            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                topics = new Topics(getApplicationContext(),response);
+                recyclerView.setAdapter(new TopicsAdapter(topics,getApplicationContext()));
             }
 
             @Override
-            public void onFailure(Call<TopicsResponse> call, Throwable t) {
+            public void onFailure(Call<JsonObject> call, Throwable t) {
 
             }
         });
@@ -65,11 +68,11 @@ public class KnowledgeTopicsActivity extends AppCompatActivity {
         ItemClickSupport.addTo(recyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int position, View v) {
-                String content = topics.get(position).getContent();
-
-                Intent i = new Intent(KnowledgeTopicsActivity.this, KnowledgeContentActivity.class);
-                i.putExtra("content", content);
-                startActivity(i);
+                String content = topics.getContent(position);
+                String topic = topics.getTopic(position);
+                Question question = new Question(getApplicationContext());
+                Question.create_content_ses(content,topic);
+                startActivity(new Intent(KnowledgeTopicsActivity.this,KnowledgeContentActivity.class));
             }
         });
     }

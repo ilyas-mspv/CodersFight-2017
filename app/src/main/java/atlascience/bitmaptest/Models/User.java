@@ -24,7 +24,11 @@ public class User {
         return Response.get("email").getAsString();
     }
 
+    public String getUrl(){return Response.get("photo").getAsString();}
 
+    public int getStatus(){
+        return Response.get("account_status").getAsInt();
+    }
 
 }
 

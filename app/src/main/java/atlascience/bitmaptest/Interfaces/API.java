@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 
 import org.json.JSONObject;
 
-import atlascience.bitmaptest.Models.Knowledge.TopicsResponse;
 import atlascience.bitmaptest.Models.Queue.QueueResponse;
 import atlascience.bitmaptest.Models.Rating.RatingResponse;
 import okhttp3.MultipartBody;
@@ -50,6 +49,12 @@ public interface API {
             @Query("method") String method,
             @Query("id") String id,
             @Query("token") String token
+    );
+
+    @GET ("api.php")
+    Call<JsonObject> update_url(
+            @Query("method") String method,
+            @Query("user_id") String user_id
     );
 
     //GAME FUNCTIONS
@@ -98,9 +103,7 @@ public interface API {
             @Query("game_round_id") int game_round_id,
             @Query("user_id_one") int user_id1,
             @Query("time_one") double time1,
-            @Query("answer_one") int answer1,
-            @Query("move_id") int move_id
-
+            @Query("answer_one") int answer1
     );
 
     @GET("api.php")
@@ -109,9 +112,7 @@ public interface API {
             @Query("game_round_id") int game_round_id,
             @Query("user_id_two") int user_id2,
             @Query("time_two") double time2,
-            @Query("answer_two") int answer2,
-            @Query("move_id") int move_id
-
+            @Query("answer_two") int answer2
     );
     @GET("api.php")
     Call<JSONObject> get_answer_time(
@@ -121,7 +122,7 @@ public interface API {
     );
 
     @GET("api.php")
-    Call<TopicsResponse> getAllTopics(
+    Call<JsonObject> getAllTopics(
             @Query("method") String method
     );
 
@@ -152,6 +153,43 @@ public interface API {
             @Part("method") RequestBody method,
             @Part("username") RequestBody username,
             @Part MultipartBody.Part file
+    );
+
+    @GET("api.php")
+    Call<JsonObject> get_results(
+        @Query("method") String method,
+        @Query("games_id") int games_id
+    );
+
+    @GET("api.php")
+    Call<JsonObject> set_zones(
+        @Query("method") String method,
+        @Query("games_id") int games_id,
+        @Query("zones_one") int zones1,
+        @Query("zones_two") int zones2
+    );
+
+    @GET("api.php")
+    Call<JsonObject> get_zones(
+            @Query("method") String method,
+            @Query("games_id") int games_id
+    );
+
+
+    //CONTENT
+
+    @GET("api.php")
+    Call<JsonObject> provide_question(
+            @Query("method") String method,
+            @Query("user_id") int user_id,
+            @Query("question") String question,
+            @Query("question_type") String question_type,
+            @Query("answer_one") String answer_one,
+            @Query("answer_two") String answer_two,
+            @Query("answer_three") String answer_three,
+            @Query("answer_four") String answer_four,
+            @Query("time") int time,
+            @Query("true_answer") int true_answer
     );
 
 }

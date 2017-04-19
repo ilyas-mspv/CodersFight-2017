@@ -43,8 +43,8 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
 
     @Override
     public void onBindViewHolder(final RequestViewHolder holder, final int position) {
-        holder.text_queue.setText(requestPlayerList.get(position).getUsername());
-        holder.user_id.setText(String.valueOf(requestPlayerList.get(position).getUser_id()) + " wants to play with You!");
+        holder.text_queue.setText(requestPlayerList.get(position).getUsername() + " wants to play with You!");
+        holder.user_id.setText(String.valueOf(requestPlayerList.get(position).getUser_id()));
         holder.yes_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
