@@ -9,4 +9,8 @@
     <color name="red">#ef5350</color>
     <color name="green">#73e678</color>
     <color name="blue">#2071f7</color>
+    <color name="line_result_color">#354250</color>
+    <color name="splash_background">#eeeeee</color>
+    <color name="profile_btn_color">#0066cc</color>
+    <color name="logout_btn_color">#cc0000</color>
 </resources>

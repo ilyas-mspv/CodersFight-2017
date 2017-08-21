@@ -77,5 +77,19 @@ public class Zones {
         s_data.put("success", String.valueOf(sharPref.getBoolean("success", false)));
         return s_data;
     }
+
+    public static void create_zones(int zones1,int zones2){
+        editor.putInt("zones1",zones1);
+        editor.putInt("zones2",zones2);
+        editor.commit();
+    }
+
+    public static  HashMap<String,String> get_zones_result(){
+        HashMap<String,String> data = new HashMap<>();
+        data.put("zones1", String.valueOf(sharPref.getInt("zones1",0)));
+        data.put("zones2", String.valueOf(sharPref.getInt("zones2",0)));
+
+        return data;
+    }
 }
 

@@ -11,7 +11,6 @@ import android.webkit.WebViewClient;
 import android.widget.TextView;
 
 import java.util.HashMap;
-import java.util.List;
 
 import atlascience.bitmaptest.Authenticator.SessionManager;
 import atlascience.bitmaptest.Constants;
@@ -81,23 +80,30 @@ public class ResultsAdapter extends RecyclerView.Adapter<ResultsAdapter.ResultsV
 
         if (user_id == user_id1) {
             userAnswer = resultsList.get_user_answer1(position);
+            holder.time_results.setText(String.valueOf(resultsList.get_time1(position)));
         } else {
             userAnswer = resultsList.get_user_answer2(position);
+            holder.time_results.setText(String.valueOf(resultsList.get_time2(position)));
         }
 
         Log.d("MYLOGS", String.valueOf(userAnswer));
         Log.d("MYLOGS", String.valueOf(resultsList.get_answer_true(position)));
         Log.d("MYLOGS", "----------------------------------------------------");
 
-        answersTV[resultsList.get_answer_true(position)-1].setTextColor(context.getResources().getColor(R.color.green));
         if (resultsList.get_answer_true(position) != userAnswer) {
-            answersTV[resultsList.get_answer_true(position) - 1].setTextColor(context.getResources().getColor(R.color.red));
+            if(user_id==user_id1){
+                answersTV[resultsList.get_user_answer1(position)-1].setTextColor(context.getResources().getColor(R.color.red));
+            }else{
+                answersTV[resultsList.get_user_answer2(position)-1].setTextColor(context.getResources().getColor(R.color.red));
+            }
+
         }
+        answersTV[resultsList.get_answer_true(position)-1].setTextColor(context.getResources().getColor(R.color.green));
     }
 
     @Override
     public int getItemCount() {
-        return 5;
+        return resultsList.get_size();
     }
 
     class ResultsViewHolder extends RecyclerView.ViewHolder{

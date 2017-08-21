@@ -12,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -20,22 +19,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.JsonObject;
-import com.squareup.picasso.Picasso;
-
 import org.json.JSONObject;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
-import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.Fragments.AnswerResultFragment;
 import atlascience.bitmaptest.Fragments.QuestionFragment;
 import atlascience.bitmaptest.Models.Game;
 import atlascience.bitmaptest.Models.Question;
-import atlascience.bitmaptest.Models.Results;
 import atlascience.bitmaptest.Models.Zones;
 import atlascience.bitmaptest.R;
 import atlascience.bitmaptest.Services.Config;
@@ -49,13 +42,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     SessionManager session;
+    int account_status = 0;
     FragmentManager fm = getSupportFragmentManager();
     Bundle bundle = new Bundle();
+    SweetAlertDialog wait_dialog;
     boolean doublePress = false;
-    TextView textView_user_id1, textView_user_id2, textview_logs,test_logs;
+    TextView textView_user_id1, textView_user_id2, textview_logs,steps_counter_game;
     ImageView r1,r2,r3,r4,r5;
-    ImageView user1_photo,user2_photo;
-    String photo_user1,photo_user2;
 
     //users' data
     String  game_id,name,
@@ -64,53 +57,9 @@ public class MainActivity extends AppCompatActivity {
             start_zone1, start_zone2,
             username1, username2;
     int move_user_id;
-    boolean first = true;
 
     int stepsCounter = 0;
     int[] areas = new int[5];
-    private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
-
-        @Override
-        public boolean onTouch(final View v, MotionEvent event) {
-
-            Bitmap bmp = Bitmap.createBitmap(v.getDrawingCache());
-            int color = 0;
-            try {
-                color = bmp.getPixel((int) event.getX(), (int) event.getY());
-            } catch (Exception e) {
-                Log.e("COLOR ERROR", e.toString());
-            }
-            if (color == Color.TRANSPARENT)
-                return false;
-            else {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-
-                        if(checkAreas()){
-                            if (!isMyZone(v.getId())) {
-                                choose_land(v.getId());
-                            }else{
-                                Toast.makeText(getApplicationContext(),"you can't capture your zone",Toast.LENGTH_SHORT).show();
-                            }
-                        }else{
-                            choose_land(v.getId());
-                        }
-
-                        break;
-                    case MotionEvent.ACTION_CANCEL:
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-
-            }
-        }
-    };
     int zone_1, zone_2;
     boolean is_success_answer = false;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
@@ -121,10 +70,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         session = new SessionManager(getApplicationContext());
 
+        HashMap<String, String> user = session.getUserDetails();
+        name = user.get(SessionManager.KEY_NAME);
+        account_status = Integer.parseInt(user.get(SessionManager.KEY_ACCOUNT_STATUS));
+
         initMap();
         notification_receiver();
         GetSetData();
-
     }
 
     private void notification_receiver() {
@@ -158,14 +110,17 @@ public class MainActivity extends AppCompatActivity {
                             HashMap<String, String> question_data = Question.getQuestion();
                             String question = question_data.get(Question.KEY_QUESTION);
                             String ques_type = question_data.get("question_type");
+
                             if (!question.equals("")){
                                 if(ques_type.equals("insert")){
                                     create_question_dialog();
+
                                 }
                                 if(ques_type.equals("select")){
                                     create_question_dialog();
                                 }
                             }
+
                             break;
 
                         case "success_answer":
@@ -217,8 +172,8 @@ public class MainActivity extends AppCompatActivity {
                             int zone = Integer.parseInt(zones_data.get(Zones.KEY_ZONE));
                             double time1 = Double.parseDouble(zones_data.get(Zones.KEY_TIME1));
                             double time2 = Double.parseDouble(zones_data.get(Zones.KEY_TIME2));
-                            int answer1 = Integer.parseInt(zones_data.get(Zones.KEY_ANSWER1));
-                            int answer2 = Integer.parseInt(zones_data.get(Zones.KEY_ANSWER2));
+                            String answer1 = zones_data.get(Zones.KEY_ANSWER1);
+                            String answer2 = zones_data.get(Zones.KEY_ANSWER2);
 
 
                             Log.i(TAG, String.valueOf(winner));
@@ -231,8 +186,7 @@ public class MainActivity extends AppCompatActivity {
                             int u_id1 = Integer.parseInt(user_id1);
                             int u_id2 = Integer.parseInt(user_id2);
 
-                            create_result_dialog(winner, time1, time2, answer1, answer2,correct1,correct2);
-                            setArea( winner, zone, u_id1, u_id2);
+                            setArea( winner, zone, u_id1, u_id2,time1,time2,answer1,answer2,correct1,correct2);
 
                             break;
                     }
@@ -254,20 +208,25 @@ public class MainActivity extends AppCompatActivity {
         r3.setDrawingCacheEnabled(true);
         r4.setDrawingCacheEnabled(true);
         r5.setDrawingCacheEnabled(true);
-
         Button finish_test = (Button) findViewById(R.id.finish_test);
-        finish_test.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Game game = new Game(getApplicationContext());
-                Zones z = new Zones(getApplicationContext());
-                Question q = new Question(getApplicationContext());
-                Zones.delete();
-                Game.delete_game();
-                Question.delete();
-                System.exit(0);
-            }
-        });
+        finish_test.setVisibility(View.GONE);
+
+        if(account_status==2){
+            finish_test.setVisibility(View.VISIBLE);
+            finish_test.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Game game = new Game(getApplicationContext());
+                    Zones z = new Zones(getApplicationContext());
+                    Question q = new Question(getApplicationContext());
+                    Zones.delete();
+                    Game.delete_game();
+                    Question.delete();
+                    System.exit(0);
+                }
+            });
+        }
+
 
     }
 
@@ -276,14 +235,9 @@ public class MainActivity extends AppCompatActivity {
         textView_user_id1 = (TextView) findViewById(R.id.user_id1);
         textView_user_id2 = (TextView) findViewById(R.id.user_id2);
         textview_logs = (TextView) findViewById(R.id.logs_main);
-        user1_photo = (ImageView) findViewById(R.id.game_user_id1_photo);
-        user2_photo = (ImageView) findViewById(R.id.game_user_id2_photo);
+        steps_counter_game = (TextView) findViewById(R.id.steps_counter_game);
 
         //setting user's default data
-        HashMap<String, String> user = session.getUserDetails();
-        name = user.get(SessionManager.KEY_NAME);
-        photo_user1 = Constants.URLS.GAME_PROFILE_URL+user.get(SessionManager.KEY_IMAGE_URL)+".jpg";
-
 
         try{
             Game game = new Game(getApplicationContext());
@@ -296,8 +250,6 @@ public class MainActivity extends AppCompatActivity {
             start_zone2 = data.get(Game.KEY_START_ZONE_2);
             username1 = data.get(Game.KEY_USERNAME_1);
             username2 = data.get(Game.KEY_USERNAME_2);
-            photo_user2 = Constants.URLS.GAME_PROFILE_URL + data.get(Game.KEY_USER2_PHOTO) + ".jpg";
-
         }catch (Error e){
             Log.e(TAG,e.toString());
         }
@@ -347,11 +299,6 @@ public class MainActivity extends AppCompatActivity {
                 r5.setImageResource(R.drawable.map_area_5_red_capital);
                 break;
         }
-
-        if(!photo_user1.equals("0"))
-            Picasso.with(getApplicationContext()).load(photo_user1).into(user1_photo);
-        if(!photo_user2.equals("0"))
-            Picasso.with(getApplicationContext()).load(photo_user2).into(user2_photo);
 
     }
 
@@ -409,16 +356,14 @@ public class MainActivity extends AppCompatActivity {
 
     //areas part
     public boolean isMyZone(int id) {
-
-        int zones[] = new int[6];
-        int s_zone1 = Integer.parseInt(start_zone1);
-        int s_zone2 = Integer.parseInt(start_zone2);
-
-        zones[s_zone1] = Integer.parseInt(user_id1);
-        zones[s_zone2] = Integer.parseInt(user_id2);
-
         int i = get_touched(id);
-        return zones[i] == move_user_id;
+        int my_id = 0;
+        if(username1.equals(name)){
+            my_id = Integer.parseInt(user_id1);
+        }else{
+            my_id = Integer.parseInt(user_id2);
+        }
+        return areas[i-1] == my_id;
     }
 
     public void setOnClickListenersForUser(boolean isTouchable) {
@@ -467,14 +412,18 @@ public class MainActivity extends AppCompatActivity {
         return zone == Integer.parseInt(start_zone1) || zone == Integer.parseInt(start_zone2);
     }
 
-    private void setArea(int winner,int zone,int u_id1,int u_id2) {
+    private void setArea(int winner,int zone,int u_id1,int u_id2,double time1,double time2,String answer1,String answer2, String correct1,String correct2) {
         Game game = new Game(getApplicationContext());
 
         areas[Integer.parseInt(start_zone1)-1] = u_id1;
         areas[Integer.parseInt(start_zone2)-1] = u_id2;
         stepsCounter++;
-        if(isStepAvailable(stepsCounter)){
+        if(isStepAvailable(stepsCounter) && isAreaAvailable() && !isAllInvaded()){
+            if(account_status==2)
+            if(isAreaAvailable()) Toast.makeText(getApplicationContext(),"available",Toast.LENGTH_SHORT).show();
 
+            steps_counter_game.setText("Steps: "+String.valueOf(stepsCounter));
+            create_result_dialog_round(winner, time1, time2, answer1, answer2,correct1,correct2);
             if (username1.equals(name)) {
                 //user1 green
                 //user2 red
@@ -482,8 +431,6 @@ public class MainActivity extends AppCompatActivity {
                     //green
                     areas[zone - 1] = u_id1;
                     set_green_zone(zone);
-
-//                    test_logs.setText("areas array: " + Arrays.toString(areas));
 
                     textview_logs.setTextColor(getResources().getColor(R.color.green));
                     textview_logs.setText(username1 + "'s move!");
@@ -495,8 +442,6 @@ public class MainActivity extends AppCompatActivity {
                     //red
                     set_red_zone(zone);
                     areas[zone - 1] = u_id2;
-
-//                    test_logs.setText("areas array: " + Arrays.toString(areas));
 
                     textview_logs.setTextColor(getResources().getColor(R.color.red));
                     textview_logs.setText(username2 + "'s move!");
@@ -516,28 +461,17 @@ public class MainActivity extends AppCompatActivity {
                         setOnClickListenersForUser(true);
                     }
                 }
-//                if(checkAreas()){
-//                    Toast.makeText(MainActivity.this, "areas not full", Toast.LENGTH_SHORT).show();
-//                }else{
-//                    Toast.makeText(MainActivity.this, "areas are full", Toast.LENGTH_SHORT).show();
-//                    Handler handlerUI = new Handler();
-//                    handlerUI.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if (first)
-//                            notifyCapture(first);
-//                        }
-//                    },1000);
-//                }
+
             } else {
                 //user1 red
                 //user2 green
+                if(account_status==2)
+                    if(isAreaAvailable()) Toast.makeText(getApplicationContext(),"available",Toast.LENGTH_SHORT).show();
+
                 if (winner == u_id2) {
                     //green
                     areas[zone - 1] = u_id2;
                     set_green_zone(zone);
-
-//                    test_logs.setText("areas array: " + Arrays.toString(areas));
 
                     textview_logs.setTextColor(getResources().getColor(R.color.green));
                     textview_logs.setText(username2 + "'s" + " move!");
@@ -549,8 +483,6 @@ public class MainActivity extends AppCompatActivity {
                     //red
                     set_red_zone(zone);
                     areas[zone - 1] = u_id1;
-
-//                    test_logs.setText("areas array: " + Arrays.toString(areas));
 
                     textview_logs.setTextColor(getResources().getColor(R.color.red));
                     textview_logs.setText(username1 + "'s" + " move!");
@@ -573,34 +505,17 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-//                if(checkAreas()){
-//                    Toast.makeText(MainActivity.this, "areas not full", Toast.LENGTH_SHORT).show();
-//                }else{
-//                    Toast.makeText(MainActivity.this, "areas are full", Toast.LENGTH_SHORT).show();
-//                    Handler handlerUI = new Handler();
-//                    handlerUI.postDelayed(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            if(first) notifyCapture(first);
-//                        }
-//                    },1000);
-//
-//                }
             }
+
         }else{
+            if(account_status==2)
+                if(!isAreaAvailable())
+                    Toast.makeText(getApplicationContext(), "not available", Toast.LENGTH_SHORT).show();
+
             //end round
-            AppController.getApi().set_zones("get_zones",Integer.parseInt(game_id),zones1(),zones2()).enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                    Intent i = new Intent(MainActivity.this, ResultsActivity.class);
-                    startActivity(i);
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-
-                }
-            });
+            int zones1 = zones1();
+            int zones2 = zones2();
+            create_result_dialog_end(winner, time1, time2, answer1, answer2,correct1,correct2,zones1,zones2);
 
         }
     }
@@ -625,15 +540,6 @@ public class MainActivity extends AppCompatActivity {
         return c;
     }
 
-    private void notifyCapture(boolean f) {
-//        int i = 0;
-//        if(i==0){
-//            Toast toast = Toast.makeText(getApplicationContext(), "Defend or capture the base", Toast.LENGTH_LONG);
-//            toast.setGravity(Gravity.TOP, 0, 0);
-//            toast.show();
-//            i++;
-//        }
-    }
 
     private void set_red_zone(int zone) {
         if(!isCapital(zone)){
@@ -719,30 +625,59 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean checkAreas(){
-        int count = 0;
+   private boolean isAreaAvailable(){
+       int counter = 0;
+       for (int i = 0; i < areas.length; i++) {
+           if(areas[i]==Integer.parseInt(user_id1) || areas[i] == Integer.parseInt(user_id2))
+               counter++;
+       }
+
+       return counter != areas.length;
+   }
+
+    private boolean isAlmostAllInvaded(){
+        int counter =0;
+        int my_id;
+        if(username1.equals(name)){
+            my_id = Integer.parseInt(user_id1);
+        }else{
+            my_id = Integer.parseInt(user_id2);
+        }
+
         for (int i = 0; i < areas.length; i++) {
-            if(areas[i]!=0){
-               count++;
+            if(areas[i]==my_id){
+                counter++;
             }
         }
-        return areas.length != count;
+        if(counter==4)
+            return true;
+        else
+            return false;
+    }
+
+    private  boolean isAllInvaded(){
+        int counter =0;
+        int my_id;
+        if(username1.equals(name)){
+            my_id = Integer.parseInt(user_id1);
+        }else{
+            my_id = Integer.parseInt(user_id2);
+        }
+
+        for (int i = 0; i < areas.length; i++) {
+            if(areas[i]==my_id){
+                counter++;
+            }
+        }
+        if(counter==areas.length)
+            return true;
+        else
+            return false;
     }
 
     public boolean isStepAvailable(int move){
-        int steps = 5;
-        //continue
-//end round
+        int steps = 6;
         return move < steps;
-    }
-
-    public boolean isMyCapital(int id){
-        int i = get_touched(id);
-        if(username1.equals(name)){
-            return i == Integer.parseInt(start_zone1);
-        }else{
-            return i == Integer.parseInt(start_zone2);
-        }
     }
 
     //override methods
@@ -781,6 +716,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mRegistrationBroadcastReceiver);
+
         super.onPause();
     }
 
@@ -810,6 +746,9 @@ public class MainActivity extends AppCompatActivity {
 
         //question part
     private void create_question_dialog() {
+        wait_dialog = new SweetAlertDialog(MainActivity.this,SweetAlertDialog.PROGRESS_TYPE);
+        wait_dialog.setTitleText("Loading..");
+        wait_dialog.show();
         int my_id;
         if(username1.equals(name)){
             my_id = Integer.parseInt(user_id1);
@@ -821,8 +760,79 @@ public class MainActivity extends AppCompatActivity {
         questionFragment.show(fm,"tag");
     }
 
-    private void create_result_dialog(int winner,double time1, double time2,int answer1,int answer2,String correct1,String correct2) {
-        AnswerResultFragment fragment = new AnswerResultFragment(winner,time1,time2,answer1,answer2,correct1,correct2);
+    private void create_result_dialog_round(int winner, double time1, double time2, String answer1, String answer2, String correct1, String correct2) {
+        wait_dialog.setTitleText("Forward to the answer");
+        AnswerResultFragment fragment = new AnswerResultFragment(winner,time1,time2,answer1,answer2,correct1,correct2,0,wait_dialog);
         fragment.show(fm,"tag");
     }
+
+    private void create_result_dialog_end(int winner, double time1, double time2, String answer1, String answer2, String correct1, String correct2,int zones1,int zones2) {
+        wait_dialog.setTitleText("Forward to the answer");
+        AnswerResultFragment fragment = new AnswerResultFragment(winner,time1,time2,answer1,answer2,correct1,correct2,1,zones1,zones2,wait_dialog);
+        fragment.show(fm,"tag");
+    }
+
+    public void limit_clicks(){
+        r1.setEnabled(false);
+        r2.setEnabled(false);
+        r3.setEnabled(false);
+        r4.setEnabled(false);
+        r5.setEnabled(false);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                r1.setEnabled(true);
+                r2.setEnabled(true);
+                r3.setEnabled(true);
+                r4.setEnabled(true);
+                r5.setEnabled(true);
+            }
+        },1000);
+    }
+
+
+    private final View.OnTouchListener rOnTouch = new View.OnTouchListener() {
+
+        @Override
+        public boolean onTouch(final View v, MotionEvent event) {
+
+            Bitmap bmp = Bitmap.createBitmap(v.getDrawingCache());
+            int color = 0;
+            try {
+                color = bmp.getPixel((int) event.getX(), (int) event.getY());
+            } catch (Exception e) {
+                Log.e("COLOR ERROR", e.toString());
+            }
+            if (color == Color.TRANSPARENT)
+                return false;
+            else {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+
+//                        if(!isMyZone(v.getId()))
+                            if(!isCapital(get_touched(v.getId()))){
+                                choose_land(v.getId());
+                            }else{
+                                if(isAlmostAllInvaded())
+                                    Toast.makeText(MainActivity.this, "yeah", Toast.LENGTH_SHORT).show();
+                                else
+                                    Toast.makeText(MainActivity.this, "nope", Toast.LENGTH_SHORT).show();
+
+                            }
+                        limit_clicks();
+                        break;
+                    case MotionEvent.ACTION_CANCEL:
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+
+            }
+        }
+    };
 }

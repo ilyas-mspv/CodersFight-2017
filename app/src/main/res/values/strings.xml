@@ -1,4 +1,48 @@
 <resources>
     <string name="app_name">Coders Fight</string>
     <string name="title_activity_rating">Rating</string>
+    <string name="title_queue_activity">Queue</string>
+    <string name="title_topics_activity">Topics</string>
+    <string name="title_provide_question">Provide Question</string>
+
+    <integer name="com_vk_sdk_AppId">6038053</integer>
+
+    <string name="dialog_error_type_summary">Check your Internet connection</string>
+    <string name="dialog_error_type">Error</string>
+    <string name="dialog_load_type">Loading..</string>
+
+
+
+    <!-- PROFILE -->
+    <string name="btn_play_profile">PLAY</string>
+    <string name="btn_knowledge_profile">Knowledge</string>
+    <string name="btn_rating_profile">Rating</string>
+    <string name="btn_provide_ques_profile">Provide Question</string>
+
+    <!-- QUEUE -->
+    <string name="btn_random_player_queue"> Random Player</string>
+    <string name="text_recommend_queue">Wait until someone will play with you \n or \n choose: </string>
+    <string name="card_text_question_queue">Do you want to play with him?</string>
+    <string name="card_text_request_queue"> wants to play with you!</string>
+    <string name="dialog_request_queue">Game request</string>
+    <string name="dialog_request_msg_queue"> wants to play with you. Do you want to start?</string>
+    <string name="dialog_loading_queue">Loading..</string>
+
+    <!-- GAME -->
+    <string name="text_move_game"> move!</string>
+    <string name="text_steps_game"> Steps: 0</string>
+
+    <!-- RESULTS -->
+    <string name="text_winner">YOU WON</string>
+    <string name="text_loser">YOU LOST</string>
+
+
+    <!-- STATISTICS -->
+
+    <string name="stats_text_rating">Rating: </string>
+    <string name="stats_text_played_times">Played Times: </string>
+    <string name="stats_text_winner_times">Winner Times: </string>
+    <string name="stats_text_answered_questions">Answered Questions: </string>
+    <string name="stats_text_correct_answers">Correct Answers: </string>
+
 </resources>

@@ -24,7 +24,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
     EditText email,password;
-    Button login;
+    Button login,vk_login;
     TextView log_login;
     SessionManager session;
 
@@ -36,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         email = (EditText) findViewById(R.id.email_login);
         password =(EditText) findViewById(R.id.password_login);
         log_login = (TextView) findViewById(R.id.log_login);
+
         session = new SessionManager(getApplicationContext());
         init();
 
@@ -108,5 +109,11 @@ public class LoginActivity extends AppCompatActivity {
                 }
         );
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+    }
+
 
 }

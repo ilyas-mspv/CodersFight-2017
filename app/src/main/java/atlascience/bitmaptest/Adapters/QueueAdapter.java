@@ -42,9 +42,8 @@ public class QueueAdapter extends RecyclerView.Adapter<QueueAdapter.QueueViewHol
     public void onBindViewHolder(QueueViewHolder holder, int position) {
         holder.id.setText(String.valueOf(queueList.get(position).getUser_id()));
         holder.order_number.setText(String.valueOf(queueList.get(position).getOrder_number()));
-        if(!queueList.get(position).getPhoto_queue().equals("0"))
-        Picasso.with(context).load(queueList.get(position).getPhoto_queue()).into(holder.photo_url);
-
+        if(!queueList.get(position).getPhoto_queue().equals(""))
+            Picasso.with(context).load(queueList.get(position).getPhoto_queue()).into(holder.photo_url);
         holder.username.setText(queueList.get(position).getUsername());
     }
 

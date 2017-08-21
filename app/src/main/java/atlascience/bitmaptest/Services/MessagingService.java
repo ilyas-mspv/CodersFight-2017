@@ -37,7 +37,7 @@ public class MessagingService extends FirebaseMessagingService {
 
             try {
                 JSONObject json = new JSONObject(remoteMessage.getData().toString());
-                handleDataMessage(json);
+                handleDataMessage(json,remoteMessage.getData().toString());
             } catch (Exception e) {
                 Log.e(TAG, "Exception: " + e.getMessage());
             }
@@ -45,7 +45,7 @@ public class MessagingService extends FirebaseMessagingService {
 
     }
 
-    private void handleDataMessage(JSONObject json) {
+    private void handleDataMessage(JSONObject json,String data) {
         Log.e(TAG, "push json: " + json.toString());
 
         try {
@@ -65,7 +65,7 @@ public class MessagingService extends FirebaseMessagingService {
                     break;
 
                 case "question":
-                    get_question(json, "question");
+                    get_question(json, "question",data);
                     break;
 
                 case "answer":
@@ -195,7 +195,8 @@ public class MessagingService extends FirebaseMessagingService {
             String zone1 = zone_1.toString();
             String zone2 = zone_2.toString();
 
-            String user2_photo = json.getString("user2_photo");
+            String user2_photo = "0";
+            String user1_photo = "0";
 
 
             Log.e(TAG, zone1);
@@ -209,9 +210,8 @@ public class MessagingService extends FirebaseMessagingService {
             Log.i(TAG, username1);
             Log.i(TAG, username2);
 
-            Game.create_game(game_id, user_id1, user_id2, first_player, start_zone1, start_zone2, username1, username2, Integer.parseInt(zone1), Integer.parseInt(zone2),user2_photo);
+            Game.create_game(game_id, user_id1, user_id2, first_player, start_zone1, start_zone2, username1, username2, Integer.parseInt(zone1), Integer.parseInt(zone2),user2_photo,user1_photo);
 
-//
             startActivity(new Intent(MessagingService.this, MainActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 
         } catch (JSONException e1) {
@@ -219,17 +219,23 @@ public class MessagingService extends FirebaseMessagingService {
         }
     }
 
-    private void get_question(JSONObject json, String tag) {
+    private void get_question(JSONObject json, String tag,String data) {
 
         try {
+
+
             int user_id = json.getInt("user_id");
             int question_id = json.getInt("question_id");
             String question_answer = json.getString("question");
             String question_type = json.getString("question_type");
             String answer1_answer = json.getString("answer1");
+            if(answer1_answer.contains("*%")) answer1_answer.replace("*%","=");
             String answer2_answer = json.getString("answer2");
+            if(answer2_answer.contains("*%")) answer2_answer.replace("*%","=");
             String answer3_answer = json.getString("answer3");
+            if(answer3_answer.contains("*%")) answer3_answer.replace("*%","=");
             String answer4_answer = json.getString("answer4");
+            if(answer4_answer.contains("*%")) answer4_answer.replace("*%","=");
             int time_answer = json.getInt("time");
             int answer_true = json.getInt("answer_true");
             int zone = json.getInt("zone");

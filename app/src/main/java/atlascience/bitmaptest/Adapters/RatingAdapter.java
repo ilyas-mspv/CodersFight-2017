@@ -8,8 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.HashMap;
 import java.util.List;
 
+import atlascience.bitmaptest.Authenticator.SessionManager;
 import atlascience.bitmaptest.Models.Rating.Rating;
 import atlascience.bitmaptest.R;
 
@@ -34,6 +36,13 @@ public class RatingAdapter extends RecyclerView.Adapter<RatingAdapter.RatingView
 
     @Override
     public void onBindViewHolder(RatingViewHolder holder, int position) {
+        SessionManager ses = new SessionManager(context);
+        HashMap<String,String> user =ses.getUserDetails();
+        int user_id = Integer.parseInt(user.get(SessionManager.KEY_ID));
+        int u_id = users.get(position).getId();
+        if(user_id==u_id){
+            holder.username.setText(users.get(position).getUsername()+"(You)");
+        }
         holder.textId.setText(String.valueOf(users.get(position).getId()));
         holder.order_number.setText(String.valueOf(users.get(position).get_order_num_id()));
         holder.username.setText(users.get(position).getUsername());

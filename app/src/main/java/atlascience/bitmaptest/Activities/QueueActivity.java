@@ -1,18 +1,13 @@
 package atlascience.bitmaptest.Activities;
 
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,6 +28,7 @@ import atlascience.bitmaptest.Adapters.QueueAdapter;
 import atlascience.bitmaptest.Adapters.RequestAdapter;
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
+import atlascience.bitmaptest.BaseAppCompatActivity;
 import atlascience.bitmaptest.Models.Game;
 import atlascience.bitmaptest.Models.Queue.Queue;
 import atlascience.bitmaptest.Models.Queue.QueueResponse;
@@ -45,7 +41,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class QueueActivity extends AppCompatActivity {
+public class QueueActivity extends BaseAppCompatActivity {
 
     private static final String TAG = QueueActivity.class.getSimpleName();
     Button find_player,random_player;
@@ -57,7 +53,6 @@ public class QueueActivity extends AppCompatActivity {
     LinearLayoutManager linearLayoutManager;
     RecyclerView rv, recyclerview;
     QueueAdapter adapter;
-    AlertDialog.Builder ad;
     HashMap<String, String> user;
     int user_id;
     String username;
@@ -72,7 +67,8 @@ public class QueueActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        initQueuePlayers();
+        if(isNetworkAvailable())
+        initQueuePlayers(); else setErrorAlert(getResources().getString(R.string.dialog_error_type));
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +80,7 @@ public class QueueActivity extends AppCompatActivity {
 
                     @Override
                     public void onFailure(Call<QueueResponse> call, Throwable t) {
-
+                        setErrorAlert(t.getMessage());
                     }
                 });
 
@@ -126,12 +122,12 @@ public class QueueActivity extends AppCompatActivity {
                                 id, another_id).enqueue(new Callback<JSONObject>() {
                             @Override
                             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-                                //TODO do not repeat requests
+
                             }
 
                             @Override
                             public void onFailure(Call<JSONObject> call, Throwable t) {
-
+                                setErrorAlert(t.getMessage());
                             }
                         });
                     } else {
@@ -197,6 +193,7 @@ public class QueueActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<QueueResponse> call, Throwable t) {
 
+                setErrorAlert(t.getMessage());
             }
         });
     }
@@ -306,6 +303,7 @@ public class QueueActivity extends AppCompatActivity {
                             @Override
                             public void onFailure(Call<JSONObject> call, Throwable t) {
 
+                                setErrorAlert(t.getMessage());
                             }
                         });
                     }
@@ -320,22 +318,12 @@ public class QueueActivity extends AppCompatActivity {
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 JsonObject res = response.body();
                 dialog.dismiss();
-//                if(res.get("message").getAsString().equals("0")){
-//                    SweetAlertDialog sweetAlertDialog = new SweetAlertDialog(QueueActivity.this,SweetAlertDialog.NORMAL_TYPE);
-//                    sweetAlertDialog.setTitleText("Sorry, no one is in Queue now. Try again later");
-//                    sweetAlertDialog.setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-//                        @Override
-//                        public void onClick(SweetAlertDialog sweetAlertDialog) {
-//                            sweetAlertDialog.dismiss();
-//                        }
-//                    });
-//                }
 
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                setErrorAlert(t.getMessage());
             }
         });
     }
@@ -344,12 +332,11 @@ public class QueueActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // register GCM registration complete receiver
+
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(Config.REGISTRATION_COMPLETE));
 
-        // register new push message receiver
-        // by doing this, the activity will be notified each time areasFlag new message arrives
+
         LocalBroadcastManager.getInstance(this).registerReceiver(mRegistrationBroadcastReceiver,
                 new IntentFilter(Config.PUSH_NOTIFICATION));
 
@@ -373,6 +360,7 @@ public class QueueActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<QueueResponse> call, Throwable t) {
 
+                setErrorAlert(t.getMessage());
             }
         });
     }
@@ -387,7 +375,7 @@ public class QueueActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<QueueResponse> call, Throwable t) {
-
+                setErrorAlert(t.getMessage());
             }
         });
 

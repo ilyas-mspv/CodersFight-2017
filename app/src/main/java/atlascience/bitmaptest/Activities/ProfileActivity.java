@@ -12,17 +12,13 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.JsonObject;
 import com.squareup.picasso.Picasso;
 
@@ -34,6 +30,7 @@ import java.util.UUID;
 
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
+import atlascience.bitmaptest.BaseAppCompatActivity;
 import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.R;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -41,16 +38,16 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends BaseAppCompatActivity {
 
     private static final int STORAGE_PERMISSION_CODE = 123;
     //data
     SessionManager session;
     HashMap<String,String> user;
     //UI
-    Button logout, play_button, rating, knowledge, statistics,provide_question;
+    Button logout, play_button, rating, knowledge,provide_question;
     TextView username;
-    ImageView profile_photo;
+    ImageView profile_photo,statistics;
     //image operations
     private int PICK_IMAGE_REQUEST = 1;
     private Bitmap bitmap;
@@ -146,22 +143,6 @@ public class ProfileActivity extends AppCompatActivity {
     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.profile_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Toast.makeText(getApplicationContext(), "TODO", Toast.LENGTH_SHORT).show();
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
 
     private void init() {
         profile_photo = (CircleImageView) findViewById(R.id.profile_photo);
@@ -177,6 +158,14 @@ public class ProfileActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(ProfileActivity.this, ProvideQuestionActivity.class));
+            }
+        });
+
+        statistics = (ImageView) findViewById(R.id.statistics_btn_profile);
+        statistics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProfileActivity.this,StatisticsActivity.class));
             }
         });
 
@@ -215,28 +204,14 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void get_data() {
         session = new SessionManager(getApplicationContext());
-        session.checkLogin();
         username = (TextView) findViewById(R.id.username_profile);
         if(session.isLoggedIn()) {
             user = session.getUserDetails();
             int a_status = Integer.parseInt(user.get(SessionManager.KEY_ACCOUNT_STATUS));
-
-            provide_question.setVisibility(View.GONE);
-            if (a_status == 0) {
-                //usual user
-            } else {
-                //teacher
-                provide_question.setVisibility(View.VISIBLE);
-            }
+            String url = user.get(SessionManager.KEY_IMAGE_URL);
 
             final String id = user.get(SessionManager.KEY_ID);
             String name = user.get(SessionManager.KEY_NAME);
-            String photo_url = user.get(SessionManager.KEY_IMAGE_URL);
-            if(!photo_url.equals("")) update_photo_url();
-
-            String token = FirebaseInstanceId.getInstance().getToken();
-            set_token(id, token);
-            session.create_token(token);
 
             play_button = (Button) findViewById(R.id.game_play);
             play_button.setOnClickListener(new View.OnClickListener() {
@@ -249,58 +224,43 @@ public class ProfileActivity extends AppCompatActivity {
 
                 }
             });
+            if(isNetworkAvailable()){
+                showProgress(getResources().getString(R.string.dialog_load_type));
 
-            username.setText(name);
-        }
-    }
-
-    private void update_photo_url(){
-        AppController.getApi().update_url("update_url",user.get(SessionManager.KEY_ID)).enqueue(new Callback<JsonObject>() {
-            @Override
-            public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-                JsonObject jsonObject = response.body();
-                String url = jsonObject.get("photo_url").getAsString();
                 if(!url.equals(""))
-                Picasso.with(ProfileActivity.this).load(url).error(R.drawable.default_user).into(profile_photo);
+                    Picasso.with(ProfileActivity.this).load(url).error(R.drawable.default_user).into(profile_photo);
+
+                provide_question.setVisibility(View.GONE);
+                if (a_status == 0) {
+                    //usual user
+                } else {
+                    //teacher
+                    provide_question.setVisibility(View.VISIBLE);
+                }
+
+                username.setText(name);
+                dismissProgress();
+            }else{
+                setErrorAlert(getResources().getString(R.string.dialog_error_type_summary));
             }
 
-            @Override
-            public void onFailure(Call<JsonObject> call, Throwable t) {
-
-            }
-        });
+        }
     }
 
     public void server_add_to_queue(final String id){
+        showProgress(getResources().getString(R.string.dialog_load_type));
         AppController.getApi().addtoQueue("add_to_queue",id).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                dismissProgress();
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                dismissProgress();
+                setErrorAlert(t.getMessage());
             }
         });
-    }
-
-    public void set_token(String id,String token){
-
-        if(session.get_token().equals(token)){
-            Toast.makeText(getApplicationContext(),"good",Toast.LENGTH_SHORT).show();
-        }else{
-            AppController.getApi().set_token("set_token",id,token).enqueue(new Callback<JsonObject>() {
-                @Override
-                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-
-                }
-
-                @Override
-                public void onFailure(Call<JsonObject> call, Throwable t) {
-
-                }
-            });
-        }
     }
 
 }

@@ -1,7 +1,6 @@
 package atlascience.bitmaptest.Fragments;
 
 
-import android.content.BroadcastReceiver;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
@@ -12,8 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import org.json.JSONObject;
 
@@ -35,7 +34,7 @@ public class QuestionFragment extends DialogFragment {
     static int move_user_id;
     int r_time;
     View v;
-    TextView answer1_textView, answer2_textView, answer3_textView, answer4_textView;
+    Button answer1_button, answer2_button, answer3_button, answer4_button;
     CardView question_card,answer1_card,answer2_card,answer3_card,answer4_card;
     String question, answer1, answer2, answer3, answer4, answer_true, question_id, zone_question, game_round_id;
     String url;
@@ -66,16 +65,12 @@ public class QuestionFragment extends DialogFragment {
 
     private void inits() {
 
-        answer1_textView = (TextView) v.findViewById(R.id.answer1_dialog);
-        answer2_textView = (TextView) v.findViewById(R.id.answer2_dialog);
-        answer3_textView = (TextView) v.findViewById(R.id.answer3_dialog);
-        answer4_textView = (TextView) v.findViewById(R.id.answer4_dialog);
+        answer1_button = (Button) v.findViewById(R.id.answer1_dialog);
+        answer2_button = (Button) v.findViewById(R.id.answer2_dialog);
+        answer3_button = (Button) v.findViewById(R.id.answer3_dialog);
+        answer4_button = (Button) v.findViewById(R.id.answer4_dialog);
         question_content = (WebView) v.findViewById(R.id.web_question_content);
 
-        answer1_card = (CardView) v.findViewById(R.id.answer1_card);
-        answer2_card = (CardView) v.findViewById(R.id.answer2_card);
-        answer3_card = (CardView) v.findViewById(R.id.answer3_card);
-        answer4_card = (CardView) v.findViewById(R.id.answer4_card);
 
         progressBar = (ProgressBar) v.findViewById(R.id.timer_progress_bar);
         progressBar.setRotation(180);
@@ -102,10 +97,10 @@ public class QuestionFragment extends DialogFragment {
         timer = new MyCountdownTimer(time * 1000, 500);
         timer.start();
 
-        answer1_textView.setText(answer1);
-        answer2_textView.setText(answer2);
-        answer3_textView.setText(answer3);
-        answer4_textView.setText(answer4);
+        answer1_button.setText(answer1);
+        answer2_button.setText(answer2);
+        answer3_button.setText(answer3);
+        answer4_button.setText(answer4);
 
 
         url = Constants.URLS.QUESTION_URL + question + ".html";
@@ -128,6 +123,7 @@ public class QuestionFragment extends DialogFragment {
         SessionManager session = new SessionManager(getActivity().getApplicationContext());
         HashMap<String, String> user_data = session.getUserDetails();
         String name = user_data.get(SessionManager.KEY_NAME);
+
         if (name.equals(username1)) {
             AppController.getApi().set_answer1("set_answer_one",
                     Integer.parseInt(game_round_id),
@@ -165,12 +161,54 @@ public class QuestionFragment extends DialogFragment {
         }
     }
 
+    private void set_late_answer() {
+        Game game = new Game(getActivity().getApplicationContext());
+        SessionManager session = new SessionManager(getActivity().getApplicationContext());
+        zone = Integer.valueOf(zone_question);
+        HashMap<String,String> game_data = Game.getDetails();
+        String username1 = game_data.get(Game.KEY_USERNAME_1);
+        HashMap<String, String> user_data = session.getUserDetails();
+        String name = user_data.get(SessionManager.KEY_NAME);
+        String user_id1 = game_data.get(Game.KEY_USER_ID1);
+        String user_id2 = game_data.get(Game.KEY_USER_ID2);
+
+        if (name.equals(username1)) {
+            AppController.getApi().set_answer1("set_answer_one",
+                    Integer.parseInt(game_round_id),Integer.parseInt(user_id1),
+                    timer_user,0).enqueue(new Callback<JSONObject>() {
+                @Override
+                public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+
+                }
+
+                @Override
+                public void onFailure(Call<JSONObject> call, Throwable t) {
+
+                }
+            });
+        }else{
+            AppController.getApi().set_answer2("set_answer_two",
+                    Integer.parseInt(game_round_id),Integer.parseInt(user_id2),
+                    timer_user,0).enqueue(new Callback<JSONObject>() {
+                @Override
+                public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+
+                }
+
+                @Override
+                public void onFailure(Call<JSONObject> call, Throwable t) {
+
+                }
+            });
+        }
+
+    }
 
     private int card_listeners() {
 
 
         final int[] i = {0};
-        answer1_card.setOnClickListener(new View.OnClickListener() {
+        answer1_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 i[0] = 1;
@@ -178,7 +216,7 @@ public class QuestionFragment extends DialogFragment {
                 timerPause();
             }
         });
-        answer2_card.setOnClickListener(new View.OnClickListener() {
+        answer2_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 i[0] =2;
@@ -186,7 +224,7 @@ public class QuestionFragment extends DialogFragment {
                 timerPause();
             }
         });
-        answer3_card.setOnClickListener(new View.OnClickListener() {
+        answer3_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 i[0] = 3;
@@ -194,7 +232,7 @@ public class QuestionFragment extends DialogFragment {
                 timerPause();
             }
         });
-        answer4_card.setOnClickListener(new View.OnClickListener() {
+        answer4_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 i[0] = 4;
@@ -211,16 +249,17 @@ public class QuestionFragment extends DialogFragment {
         getDialog().dismiss();
     }
 
+
     private class MyBrowser extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return true;
         }
+
     }
 
     public class MyCountdownTimer extends CountDownTimer {
-
 
         public MyCountdownTimer(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
@@ -233,12 +272,13 @@ public class QuestionFragment extends DialogFragment {
             progressBar.setProgress((int) timer_time);
 
         }
-
         @Override
         public void onFinish() {
             progressBar.setProgress(0);
+            set_late_answer();
             getDialog().dismiss();
         }
+
     }
 
 

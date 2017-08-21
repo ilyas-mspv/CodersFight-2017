@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 
-import com.google.gson.JsonObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -24,6 +22,7 @@ public class Game {
     public static final String KEY_USERNAME_1 = "username_id1";
     public static final String KEY_USERNAME_2 = "username_id2";
     public static final String KEY_USER2_PHOTO = "user2_photo";
+    public static final String KEY_USER1_PHOTO = "user1_photo";
     public static Context context;
     public static ArrayList<Integer> zones;
     static SharedPreferences sharPref;
@@ -58,7 +57,9 @@ public class Game {
     }
     public static  void create_game(int game_id, int user_id1, int user_id2,
                                     int first, int start_zone1,
-                                    int start_zone2, final String username1, final String username2,int zone1,int zone2,String user2_photo){
+                                    int start_zone2, final String username1,
+                                    final String username2,int zone1,int zone2,
+                                    String user2_photo,String user1_photo){
         editor.putInt(KEY_GAME_ID,game_id);
         editor.putInt(KEY_USER_ID1,user_id1);
         editor.putInt(KEY_USER_ID2,user_id2);
@@ -69,6 +70,7 @@ public class Game {
         editor.putString(KEY_USERNAME_1,username1);
         editor.putString(KEY_USERNAME_2,username2);
         editor.putString(KEY_USER2_PHOTO,user2_photo);
+        editor.putString(KEY_USER1_PHOTO,user1_photo);
 
         editor.putInt("zone1",zone1);
         editor.putInt("zone2",zone2);

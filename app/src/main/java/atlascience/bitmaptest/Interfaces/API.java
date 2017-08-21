@@ -158,22 +158,11 @@ public interface API {
     @GET("api.php")
     Call<JsonObject> get_results(
         @Query("method") String method,
-        @Query("games_id") int games_id
-    );
-
-    @GET("api.php")
-    Call<JsonObject> set_zones(
-        @Query("method") String method,
         @Query("games_id") int games_id,
         @Query("zones_one") int zones1,
         @Query("zones_two") int zones2
     );
 
-    @GET("api.php")
-    Call<JsonObject> get_zones(
-            @Query("method") String method,
-            @Query("games_id") int games_id
-    );
 
 
     //CONTENT
@@ -190,6 +179,12 @@ public interface API {
             @Query("answer_four") String answer_four,
             @Query("time") int time,
             @Query("true_answer") int true_answer
+    );
+
+    @GET("api.php")
+    Call<JsonObject> get_stats_data (
+            @Query("method") String method,
+            @Query("user_id") int user_id
     );
 
 }

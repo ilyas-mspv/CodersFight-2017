@@ -4,35 +4,31 @@ package atlascience.bitmaptest.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.google.gson.JsonObject;
-import com.google.gson.internal.Streams;
-
-import java.util.List;
 
 import atlascience.bitmaptest.Adapters.TopicsAdapter;
 import atlascience.bitmaptest.AppController;
+import atlascience.bitmaptest.BaseAppCompatActivity;
 import atlascience.bitmaptest.Models.Knowledge.Topics;
 import atlascience.bitmaptest.Models.Question;
 import atlascience.bitmaptest.R;
 import atlascience.bitmaptest.Utils.ItemClickSupport;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class KnowledgeTopicsActivity extends AppCompatActivity {
+public class KnowledgeTopicsActivity extends BaseAppCompatActivity {
 
     RecyclerView recyclerView;
     Topics topics;
-    TopicsAdapter topicsAdapter;
+    SweetAlertDialog dialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -43,6 +39,7 @@ public class KnowledgeTopicsActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
         initRecyclerView();
 
     }
@@ -51,17 +48,19 @@ public class KnowledgeTopicsActivity extends AppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview_topics);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-
+        showProgress("Loading..");
         AppController.getApi().getAllTopics("getAllTopics").enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 topics = new Topics(getApplicationContext(),response);
                 recyclerView.setAdapter(new TopicsAdapter(topics,getApplicationContext()));
+                dismissProgress();
             }
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                dismissProgress();
+                setErrorAlert(t.getMessage());
             }
         });
 

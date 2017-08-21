@@ -1,6 +1,7 @@
 package atlascience.bitmaptest.Fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
@@ -12,9 +13,12 @@ import android.widget.TextView;
 
 import java.util.HashMap;
 
+import atlascience.bitmaptest.Activities.ResultsActivity;
 import atlascience.bitmaptest.Models.Game;
 import atlascience.bitmaptest.Models.Question;
+import atlascience.bitmaptest.Models.Zones;
 import atlascience.bitmaptest.R;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by Ilyas on 01-Apr-17.
@@ -27,13 +31,16 @@ public class AnswerResultFragment extends DialogFragment {
             text_answer_holder1, text_answer_holder2,
             text_time_holder1, text_time_holder2, is_correct1, is_correct2;
 
-    int winner, answer1, answer2;
+    int winner;
+    String answer1, answer2;
     double time1, time2;
     String username1, username2, correct1, correct2;
     int r_time;
     Button ok_result;
+    int end_flag=0,zones1,zones2;
+    SweetAlertDialog wait_dialog;
 
-    public AnswerResultFragment(int winner, double time1, double time2, int answer1, int answer2, String correct1, String correct2) {
+    public AnswerResultFragment(int winner, double time1, double time2, String answer1, String answer2, String correct1, String correct2, int end_flag, SweetAlertDialog dialog) {
         this.winner = winner;
         this.time1 = time1;
         this.time2 = time2;
@@ -41,10 +48,22 @@ public class AnswerResultFragment extends DialogFragment {
         this.answer2 = answer2;
         this.correct1 = correct1;
         this.correct2 = correct2;
+        this.end_flag = end_flag;
+        this.wait_dialog = dialog;
     }
 
-    public AnswerResultFragment() {
-
+    public AnswerResultFragment(int winner, double time1, double time2, String answer1, String answer2, String correct1, String correct2,int end_flag,int zones1,int zones2,SweetAlertDialog dialog) {
+        this.winner = winner;
+        this.time1 = time1;
+        this.time2 = time2;
+        this.answer1 = answer1;
+        this.answer2 = answer2;
+        this.correct1 = correct1;
+        this.correct2 = correct2;
+        this.end_flag = end_flag;
+        this.zones1 = zones1;
+        this.zones2 = zones2;
+        this.wait_dialog = dialog;
     }
 
     @Nullable
@@ -93,13 +112,27 @@ public class AnswerResultFragment extends DialogFragment {
         text_time_holder2.setText(String.format("%.3f", time2));
         is_correct1.setText(correct1);
         is_correct2.setText(correct2);
+        if(end_flag==0){
+            ok_result.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    wait_dialog.dismiss();
+                    getDialog().dismiss();
+                }
+            });
+        }else{
+            ok_result.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Zones zones = new Zones(getActivity().getApplicationContext());
+                    zones.create_zones(zones1,zones2);
+                    wait_dialog.dismiss();
+                    getActivity().finish();
+                    startActivity(new Intent(getActivity(),ResultsActivity.class));
+                }
+            });
+        }
 
-        ok_result.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getDialog().dismiss();
-            }
-        });
     }
 
 

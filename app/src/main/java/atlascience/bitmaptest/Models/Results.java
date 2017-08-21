@@ -38,20 +38,20 @@ public class Results {
         return getData().get(pos).getAsJsonObject().get("answer_true").getAsInt();
     }
 
-    public int get_question_answer1(int pos){
-        return  getData().get(pos).getAsJsonObject().get("question_answer1").getAsInt();
+    public String get_question_answer1(int pos){
+        return  getData().get(pos).getAsJsonObject().get("question_answer1").getAsString();
     }
 
-    public int get_question_answer2(int pos){
-        return  getData().get(pos).getAsJsonObject().get("question_answer2").getAsInt();
+    public String get_question_answer2(int pos){
+        return  getData().get(pos).getAsJsonObject().get("question_answer2").getAsString();
     }
 
-    public int get_question_answer3(int pos){
-        return  getData().get(pos).getAsJsonObject().get("question_answer3").getAsInt();
+    public String get_question_answer3(int pos){
+        return  getData().get(pos).getAsJsonObject().get("question_answer3").getAsString();
     }
 
-    public int get_question_answer4(int pos){
-        return  getData().get(pos).getAsJsonObject().get("question_answer4").getAsInt();
+    public String get_question_answer4(int pos){
+        return  getData().get(pos).getAsJsonObject().get("question_answer4").getAsString();
     }
 
     public double get_time1(int pos){
