@@ -11,9 +11,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import atlascience.bitmaptest.Activities.MainActivity;
-import atlascience.bitmaptest.Models.Game;
-import atlascience.bitmaptest.Models.Question;
-import atlascience.bitmaptest.Models.Zones;
+import atlascience.bitmaptest.Models.Game.Game;
+import atlascience.bitmaptest.Models.Game.Question;
+import atlascience.bitmaptest.Models.Game.Zones;
 
 
 public class MessagingService extends FirebaseMessagingService {

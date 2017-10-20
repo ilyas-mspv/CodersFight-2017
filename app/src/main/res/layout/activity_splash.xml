@@ -16,6 +16,7 @@
                 android:layout_height="150dp"
                 app:srcCompat="@drawable/logo"
                 android:id="@+id/splash_logo"
+                android:src="@drawable/logo"
                 android:adjustViewBounds="false"
                 android:cropToPadding="false" />
 

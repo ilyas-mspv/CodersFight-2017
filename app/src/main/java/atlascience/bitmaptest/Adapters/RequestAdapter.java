@@ -14,6 +14,7 @@ import java.util.List;
 
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
+import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.Models.RequestPlayer;
 import atlascience.bitmaptest.R;
 import retrofit2.Call;
@@ -52,7 +53,7 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
                 HashMap<String, String> u_data = session.getUserDetails();
                 int my_id = Integer.parseInt(u_data.get(SessionManager.KEY_ID));
                 int user = requestPlayerList.get(position).getUser_id();
-                AppController.getApi().approved_request("approved_request", my_id, user, "yes").enqueue(new Callback<JSONObject>() {
+                AppController.getApi().approved_request(Constants.Methods.Version.VERSION,Constants.Methods.Game.APPROVED_REQUEST, my_id, user, "yes").enqueue(new Callback<JSONObject>() {
                     @Override
                     public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
 
@@ -76,7 +77,7 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.RequestV
 
                 int my_id = Integer.parseInt(u_data.get(SessionManager.KEY_ID));
                 int user = requestPlayerList.get(position).getUser_id();
-                AppController.getApi().approved_request("approved_request", my_id, user, "no").enqueue(new Callback<JSONObject>() {
+                AppController.getApi().approved_request(Constants.Methods.Version.VERSION,Constants.Methods.Game.APPROVED_REQUEST, my_id, user, "no").enqueue(new Callback<JSONObject>() {
                     @Override
                     public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
 

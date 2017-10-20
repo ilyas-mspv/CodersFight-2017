@@ -36,26 +36,54 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/colorAccent" />
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
 
-        <activity android:name=".Activities.MainActivity" />
-        <activity android:name=".Authenticator.LoginActivity" />
-        <activity android:name=".Authenticator.RegisterActivity" />
+        <!-- FACEBOOK -->
         <activity
-            android:name=".Activities.ProfileActivity"
-            android:label="@string/app_name">
-
-        </activity>
-        <activity android:name=".Utils.SplashScreenActivity"
-            android:label="@string/app_name">
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".Authenticator.ResetPasswordActivity" />
+        <!-- VK -->
         <activity
-            android:name=".Activities.KnowledgeTopicsActivity"
+            android:name="com.vk.sdk.VKServiceActivity"
+            android:label="ServiceActivity"
+            android:theme="@style/VK.Transparent" />
+
+        <!-- APP ACTIVITIES -->
+
+        <activity android:name=".Authenticator.LoginActivity" />
+        <activity android:name=".Authenticator.RegisterActivity" />
+        <activity android:name=".Authenticator.ResetPasswordActivity" />
+        <activity android:name=".Activities.MainActivity" />
+        <activity
+            android:name=".Activities.ProfileActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name=".Utils.SplashScreenActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".Activities.Learn.KnowledgeTopicsActivity"
             android:label=""
             android:parentActivityName=".Activities.ProfileActivity"
             android:theme="@style/AppTheme">
@@ -72,7 +100,61 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="atlascience.bitmaptest.Activities.ProfileActivity" />
         </activity>
+        <activity
+            android:name=".Activities.QueueActivity"
+            android:label=""
+            android:parentActivityName=".Activities.ProfileActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="atlascience.bitmaptest.Activities.ProfileActivity" />
+        </activity>
+        <activity
+            android:name=".Activities.Learn.KnowledgeContentActivity"
+            android:label=""
+            android:parentActivityName=".Activities.Learn.KnowledgeTopicsActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activities.Learn.KnowledgeTopicsActivity" />
+        </activity>
+        <activity
+            android:name=".Activities.ResultsActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Activities.StatisticsActivity"
+            android:parentActivityName=".Activities.ProfileActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="atlascience.bitmaptest.Activities.ProfileActivity" />
+        </activity>
+        <activity android:name=".Activities.ProvideQuestionActivity" />
+        <activity
+            android:name=".Activities.Settings.SettingsActivity"
+            android:label=""
+            android:parentActivityName=".Activities.ProfileActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="atlascience.bitmaptest.Activities.ProfileActivity" />
+        </activity>
+        <activity
+            android:name=".Activities.TrainMode.TrainTopicsActivity"
+            android:label="@string/title_activity_train_topics"
+            android:parentActivityName=".Activities.ProfileActivity"
+            android:theme="@style/AppTheme"></activity>
+        <activity
+            android:name=".Activities.TrainMode.TrainGameActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label=""
+            android:parentActivityName=".Activities.TrainMode.TrainTopicsActivity"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="atlascience.bitmaptest.Activities.TrainMode.TrainTopicsActivity" />
+        </activity>
 
+        <!-- GOOGLE GCM -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
@@ -84,8 +166,11 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".Services.MessagingService">
+        <service
+            android:name=".Services.MessagingService"
+            android:exported="false">
             <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
@@ -96,40 +181,14 @@
         </service>
 
         <activity
-            android:name=".Activities.QueueActivity"
-            android:label=""
+            android:name=".Activities.TrainMode.TrainResultsActivity"
+            android:label="@string/title_activity_train_results"
             android:parentActivityName=".Activities.ProfileActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="atlascience.bitmaptest.Activities.ProfileActivity" />
         </activity>
-        <activity
-            android:name=".Activities.KnowledgeContentActivity"
-            android:label=""
-            android:parentActivityName=".Activities.KnowledgeTopicsActivity"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="atlascience.bitmaptest.Activities.KnowledgeTopicsActivity" />
-        </activity>
-        <activity
-            android:name=".Activities.ResultsActivity"
-            android:theme="@style/AppTheme">
-
-        </activity>
-        <activity android:name=".Activities.StatisticsActivity"
-            android:parentActivityName=".Activities.ProfileActivity"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="atlascience.bitmaptest.Activities.ProfileActivity" />
-        </activity>
-
-        <activity android:name=".Activities.ProvideQuestionActivity"/>
-        <activity android:name=".Activities.SettingsActivity"/>
-        <activity android:name="com.vk.sdk.VKServiceActivity" android:label="ServiceActivity" android:theme="@style/VK.Transparent" />
-
     </application>
 
 </manifest>

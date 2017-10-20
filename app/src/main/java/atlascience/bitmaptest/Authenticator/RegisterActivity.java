@@ -1,11 +1,9 @@
 package atlascience.bitmaptest.Authenticator;
 
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +13,7 @@ import com.google.gson.JsonObject;
 
 import atlascience.bitmaptest.Activities.ProfileActivity;
 import atlascience.bitmaptest.AppController;
+import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.Models.User;
 import atlascience.bitmaptest.R;
 import atlascience.bitmaptest.Utils.GeneralDialogFragment;
@@ -22,8 +21,6 @@ import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static atlascience.bitmaptest.Models.Game.context;
 
 public class RegisterActivity  extends AppCompatActivity implements GeneralDialogFragment.OnDialogFragmentClickListener {
 
@@ -36,6 +33,7 @@ public class RegisterActivity  extends AppCompatActivity implements GeneralDialo
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
 
         username = (EditText) findViewById(R.id.nickname);
         email = (EditText) findViewById(R.id.email);
@@ -59,7 +57,7 @@ public class RegisterActivity  extends AppCompatActivity implements GeneralDialo
        final String pass = password.getText().toString();
             if (pass.length() > 4) {
                 if (mail.contains("@") && mail.contains(".")) {
-                    AppController.getApi().addUser("addUser", user, mail, pass)
+                    AppController.getApi().addUser(Constants.Methods.Version.VERSION,Constants.Methods.User.ADD, user, mail, pass)
                             .enqueue(new Callback<JsonObject>() {
                                          @Override
                                          public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -79,14 +77,16 @@ public class RegisterActivity  extends AppCompatActivity implements GeneralDialo
 
                                          }
 
-                                         @Override
+
+
+                                @Override
                                          public void onFailure(Call<JsonObject> call, Throwable t) {
 
                                          }
                                      }
                             );
                 } else {
-                    email.setError("Invalid email");
+                    email.setError("Invalid email_et");
                 }
             } else {
                 password.setError("Password is too small");
@@ -95,11 +95,12 @@ public class RegisterActivity  extends AppCompatActivity implements GeneralDialo
 
     private void login(final String email,final String password) {
 
-        AppController.getApi().getUser("getUser",email,password).enqueue(new Callback<JsonObject>() {
+        AppController.getApi().getUser(Constants.Methods.Version.VERSION,Constants.Methods.User.GET,email,password).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 User user = new User(response);
                 session.createLoginSession(user.getId(),user.getUsername(),email,user.getUrl(),user.getStatus());
+
                 Intent i = new Intent(RegisterActivity.this, ProfileActivity.class);
                 startActivity(i);
                 finish();

@@ -1,0 +1,39 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceCategory android:title="General">
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="example_switch"
+        android:title="@string/pref_title_social_recommendations" />
+
+</PreferenceCategory>
+
+
+    <PreferenceCategory android:title="User">
+
+        <EditTextPreference
+            android:capitalize="words"
+            android:inputType="textCapWords"
+            android:key="change_email"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Change Email" />
+
+
+        <EditTextPreference
+            android:capitalize="words"
+            android:inputType="textCapWords"
+            android:key="change_password"
+            android:maxLines="1"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Change Password" />
+
+        <Preference
+            android:key="sign_out"
+            android:title="Sign out">
+        </Preference>
+    </PreferenceCategory>
+
+
+</PreferenceScreen>

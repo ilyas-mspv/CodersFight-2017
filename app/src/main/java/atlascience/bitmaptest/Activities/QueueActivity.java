@@ -29,7 +29,8 @@ import atlascience.bitmaptest.Adapters.RequestAdapter;
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
 import atlascience.bitmaptest.BaseAppCompatActivity;
-import atlascience.bitmaptest.Models.Game;
+import atlascience.bitmaptest.Constants;
+import atlascience.bitmaptest.Models.Game.Game;
 import atlascience.bitmaptest.Models.Queue.Queue;
 import atlascience.bitmaptest.Models.Queue.QueueResponse;
 import atlascience.bitmaptest.Models.RequestPlayer;
@@ -73,7 +74,7 @@ public class QueueActivity extends BaseAppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AppController.getApi().delete_from_queue("delete_from_queue", Integer.parseInt(user.get(SessionManager.KEY_ID))).enqueue(new Callback<QueueResponse>() {
+                AppController.getApi().delete_from_queue(Constants.Methods.Version.VERSION,Constants.Methods.Game.Queue.DELETE, Integer.parseInt(user.get(SessionManager.KEY_ID))).enqueue(new Callback<QueueResponse>() {
                     @Override
                     public void onResponse(Call<QueueResponse> call, Response<QueueResponse> response) {
                     }
@@ -118,7 +119,7 @@ public class QueueActivity extends BaseAppCompatActivity {
                     int id = Integer.valueOf(user.get(SessionManager.KEY_ID));
 
                     if (id != another_id) {
-                        AppController.getApi().request_game("request_game",
+                        AppController.getApi().request_game(Constants.Methods.Version.VERSION,Constants.Methods.Game.REQUEST_GAME,
                                 id, another_id).enqueue(new Callback<JSONObject>() {
                             @Override
                             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
@@ -160,7 +161,7 @@ public class QueueActivity extends BaseAppCompatActivity {
     }
 
     private void get_all_from_queue_refresh() {
-        AppController.getApi().get_all_from_queue("get_all_from_queue").enqueue(new Callback<QueueResponse>() {
+        AppController.getApi().get_all_from_queue(Constants.Methods.Version.VERSION,Constants.Methods.Game.Queue.GET).enqueue(new Callback<QueueResponse>() {
             @Override
             public void onResponse(Call<QueueResponse> call, Response<QueueResponse> response) {
                 rv.removeAllViews();
@@ -179,7 +180,7 @@ public class QueueActivity extends BaseAppCompatActivity {
     }
 
     public void get_all_from_queue(final SweetAlertDialog dialog) {
-        AppController.getApi().get_all_from_queue("get_all_from_queue").enqueue(new Callback<QueueResponse>() {
+        AppController.getApi().get_all_from_queue(Constants.Methods.Version.VERSION,Constants.Methods.Game.Queue.GET).enqueue(new Callback<QueueResponse>() {
             @Override
             public void onResponse(Call<QueueResponse> call, Response<QueueResponse> response) {
                 queueList = response.body().getResults();
@@ -294,7 +295,7 @@ public class QueueActivity extends BaseAppCompatActivity {
                         final SweetAlertDialog d = new SweetAlertDialog(QueueActivity.this,SweetAlertDialog.PROGRESS_TYPE);
                         d.setTitleText("Loading..").show();
 
-                        AppController.getApi().invite_to_game("invite_to_game", Integer.parseInt(user.get(SessionManager.KEY_ID)), apr_id).enqueue(new Callback<JSONObject>() {
+                        AppController.getApi().invite_to_game(Constants.Methods.Version.VERSION,Constants.Methods.Game.INVITE, Integer.parseInt(user.get(SessionManager.KEY_ID)), apr_id).enqueue(new Callback<JSONObject>() {
                             @Override
                             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
                                     d.dismiss();
@@ -313,7 +314,7 @@ public class QueueActivity extends BaseAppCompatActivity {
 
 
     public void server_go_to_game(String id, final SweetAlertDialog dialog){
-        AppController.getApi().add_to_game("go_to_game",id).enqueue(new Callback<JsonObject>() {
+        AppController.getApi().add_to_game(Constants.Methods.Version.VERSION,Constants.Methods.Game.PLAY,id).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 JsonObject res = response.body();
@@ -351,7 +352,7 @@ public class QueueActivity extends BaseAppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        AppController.getApi().delete_from_queue("delete_from_queue", Integer.parseInt(user.get(SessionManager.KEY_ID))).enqueue(new Callback<QueueResponse>() {
+        AppController.getApi().delete_from_queue(Constants.Methods.Version.VERSION,Constants.Methods.Game.Queue.DELETE, Integer.parseInt(user.get(SessionManager.KEY_ID))).enqueue(new Callback<QueueResponse>() {
             @Override
             public void onResponse(Call<QueueResponse> call, Response<QueueResponse> response) {
 
@@ -367,7 +368,7 @@ public class QueueActivity extends BaseAppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        AppController.getApi().delete_from_queue("delete_from_queue", Integer.parseInt(user.get(SessionManager.KEY_ID))).enqueue(new Callback<QueueResponse>() {
+        AppController.getApi().delete_from_queue(Constants.Methods.Version.VERSION,Constants.Methods.Game.Queue.DELETE, Integer.parseInt(user.get(SessionManager.KEY_ID))).enqueue(new Callback<QueueResponse>() {
             @Override
             public void onResponse(Call<QueueResponse> call, Response<QueueResponse> response) {
                 finish();

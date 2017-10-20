@@ -13,4 +13,6 @@
     <color name="splash_background">#eeeeee</color>
     <color name="profile_btn_color">#0066cc</color>
     <color name="logout_btn_color">#cc0000</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

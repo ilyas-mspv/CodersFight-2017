@@ -1,4 +1,4 @@
-package atlascience.bitmaptest.Models;
+package atlascience.bitmaptest.Models.Game;
 
 
 import android.content.Context;
@@ -71,7 +71,8 @@ public class Question {
     }
 
 
-    public static  void create_content_ses(String content,String topic){
+    public static  void create_content_ses(String id,String content,String topic){
+        editor.putString("id",id);
         editor.putString("content",content);
         editor.putString("topic",topic);
         editor.commit();

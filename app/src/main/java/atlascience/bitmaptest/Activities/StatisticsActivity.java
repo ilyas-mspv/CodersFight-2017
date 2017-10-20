@@ -13,6 +13,7 @@ import java.util.HashMap;
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
 import atlascience.bitmaptest.BaseAppCompatActivity;
+import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.R;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -46,7 +47,7 @@ public class StatisticsActivity extends BaseAppCompatActivity {
 
         showProgress(getResources().getString(R.string.dialog_load_type));
 
-        AppController.getApi().get_stats_data("get_all_stats", Integer.parseInt(data.get(SessionManager.KEY_ID))).enqueue(new Callback<JsonObject>() {
+        AppController.getApi().get_stats_data(Constants.Methods.Version.VERSION,Constants.Methods.Content.GET_STATISTICS, Integer.parseInt(data.get(SessionManager.KEY_ID))).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 JsonObject res = response.body();

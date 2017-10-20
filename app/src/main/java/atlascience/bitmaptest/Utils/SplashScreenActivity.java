@@ -19,6 +19,7 @@
     import atlascience.bitmaptest.AppController;
     import atlascience.bitmaptest.Authenticator.LoginActivity;
     import atlascience.bitmaptest.Authenticator.SessionManager;
+    import atlascience.bitmaptest.Constants;
     import atlascience.bitmaptest.R;
     import de.hdodenhof.circleimageview.CircleImageView;
     import retrofit2.Call;
@@ -97,7 +98,7 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     public void set_token(String id,String token){
 
-        AppController.getApi().set_token("set_token",id,token).enqueue(new Callback<JsonObject>() {
+        AppController.getApi().set_token(Constants.Methods.Version.VERSION,Constants.Methods.User.SET_TOKEN,id,token).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
 

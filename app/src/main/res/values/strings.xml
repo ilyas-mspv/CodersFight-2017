@@ -4,13 +4,14 @@
     <string name="title_queue_activity">Queue</string>
     <string name="title_topics_activity">Topics</string>
     <string name="title_provide_question">Provide Question</string>
-
-    <integer name="com_vk_sdk_AppId">6038053</integer>
-
     <string name="dialog_error_type_summary">Check your Internet connection</string>
     <string name="dialog_error_type">Error</string>
     <string name="dialog_load_type">Loading..</string>
 
+    <!-- SOCIAL APPS API CODES -->
+    <integer name="com_vk_sdk_AppId">6038053</integer>
+    <string name="facebook_app_id">115741459118602</string>
+    <string name="fb_login_protocol_scheme">fb115741459118602</string>
 
 
     <!-- PROFILE -->
@@ -44,5 +45,17 @@
     <string name="stats_text_winner_times">Winner Times: </string>
     <string name="stats_text_answered_questions">Answered Questions: </string>
     <string name="stats_text_correct_answers">Correct Answers: </string>
+    <string name="title_activity_train_topics">TrainTopicsActivity</string>
+
+    <string name="title_activity_train_game">TrainGame</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- SETTINGS -->
+    <string name="pref_header_general">General</string>
+    <string name="pref_title_social_recommendations">Enable recommendations</string>
+    <string name="pref_description_social_recommendations"> </string>
+    <string name="title_activity_train_results">TrainResultsActivity</string>
 
 </resources>

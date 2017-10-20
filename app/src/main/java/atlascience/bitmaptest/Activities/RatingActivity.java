@@ -13,6 +13,7 @@ import atlascience.bitmaptest.Adapters.RatingAdapter;
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
 import atlascience.bitmaptest.BaseAppCompatActivity;
+import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.Models.Rating.Rating;
 import atlascience.bitmaptest.Models.Rating.RatingResponse;
 import atlascience.bitmaptest.R;
@@ -52,7 +53,7 @@ public class RatingActivity extends BaseAppCompatActivity {
         SessionManager session = new SessionManager(getApplicationContext());
         final HashMap<String, String> d = session.getUserDetails();
 
-        AppController.getApi().getAllUser("getAllUserByRating", Integer.parseInt(d.get(SessionManager.KEY_ID))).enqueue(new Callback<RatingResponse>() {
+        AppController.getApi().getAllUser(Constants.Methods.Version.VERSION,Constants.Methods.User.GET_ALL_BY_RATING, Integer.parseInt(d.get(SessionManager.KEY_ID))).enqueue(new Callback<RatingResponse>() {
             @Override
             public void onResponse(Call<RatingResponse> call, Response<RatingResponse> response) {
                 List<Rating> users = response.body().getResults();

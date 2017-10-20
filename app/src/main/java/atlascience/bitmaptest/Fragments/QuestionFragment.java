@@ -21,8 +21,8 @@ import java.util.HashMap;
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
 import atlascience.bitmaptest.Constants;
-import atlascience.bitmaptest.Models.Game;
-import atlascience.bitmaptest.Models.Question;
+import atlascience.bitmaptest.Models.Game.Game;
+import atlascience.bitmaptest.Models.Game.Question;
 import atlascience.bitmaptest.R;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -125,7 +125,7 @@ public class QuestionFragment extends DialogFragment {
         String name = user_data.get(SessionManager.KEY_NAME);
 
         if (name.equals(username1)) {
-            AppController.getApi().set_answer1("set_answer_one",
+            AppController.getApi().set_answer1(Constants.Methods.Version.VERSION,Constants.Methods.Game.SET_ANSWER1,
                     Integer.parseInt(game_round_id),
                     Integer.parseInt(user_id1),
                     (r_time * 1000) - timer_user,
@@ -142,7 +142,7 @@ public class QuestionFragment extends DialogFragment {
                 }
             });
         } else {
-            AppController.getApi().set_answer2("set_answer_two",
+            AppController.getApi().set_answer2(Constants.Methods.Version.VERSION,Constants.Methods.Game.SET_ANSWER2,
                     Integer.parseInt(game_round_id),
                     Integer.parseInt(user_id2),
                     (r_time * 1000) - timer_user,
@@ -173,7 +173,7 @@ public class QuestionFragment extends DialogFragment {
         String user_id2 = game_data.get(Game.KEY_USER_ID2);
 
         if (name.equals(username1)) {
-            AppController.getApi().set_answer1("set_answer_one",
+            AppController.getApi().set_answer1(Constants.Methods.Version.VERSION,Constants.Methods.Game.SET_ANSWER1,
                     Integer.parseInt(game_round_id),Integer.parseInt(user_id1),
                     timer_user,0).enqueue(new Callback<JSONObject>() {
                 @Override
@@ -187,7 +187,7 @@ public class QuestionFragment extends DialogFragment {
                 }
             });
         }else{
-            AppController.getApi().set_answer2("set_answer_two",
+            AppController.getApi().set_answer2(Constants.Methods.Version.VERSION,Constants.Methods.Game.SET_ANSWER2,
                     Integer.parseInt(game_round_id),Integer.parseInt(user_id2),
                     timer_user,0).enqueue(new Callback<JSONObject>() {
                 @Override

@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.google.gson.JsonObject;
 
 import atlascience.bitmaptest.AppController;
+import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.R;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -41,7 +42,7 @@ public class ResetPasswordActivity extends AppCompatActivity{
                 final String pass = reset_password.getText().toString();
 
 
-                AppController.getApi().forgotPassword("forgotPassword", username, email, pass)
+                AppController.getApi().forgotPassword(Constants.Methods.Version.VERSION,Constants.Methods.User.RESET_PASSWORD, username, email, pass)
                         .enqueue(new Callback<JsonObject>() {
                                      @Override
                                      public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

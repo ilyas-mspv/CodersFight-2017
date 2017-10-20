@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="atlascience.bitmaptest.Activities.KnowledgeTopicsActivity">
+    tools:context=".Activities.Learn.KnowledgeTopicsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -40,14 +40,14 @@
         <RelativeLayout
             android:id="@+id/layout_profile"
             android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/profile_photo"
-                android:layout_width="90dp"
-                android:layout_height="90dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
                 android:src="@drawable/default_user" />
@@ -65,77 +65,77 @@
                 android:textColor="@color/common_google_signin_btn_text_dark_focused" />
 
             <ImageView
+                android:id="@+id/statistics_btn_profile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:srcCompat="@mipmap/statistics"
-                android:id="@+id/statistics_btn_profile"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
                 android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="7dp"
                 android:layout_marginRight="7dp"
-                android:layout_marginEnd="7dp" />
+                app:srcCompat="@mipmap/statistics" />
 
         </RelativeLayout>
 
         <LinearLayout
             android:id="@+id/buttons_layout_profile"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/layout_profile"
             android:layout_marginTop="20dp"
             android:orientation="vertical">
 
             <Button
-                android:id="@+id/game_play"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/layout_profile"
-                android:text="Play"
-                android:layout_gravity="center_vertical|center_horizontal"
-                android:textSize="14sp"
-                android:textAllCaps="true" />
+            android:id="@+id/game_play"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/layout_profile"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:text="Play"
+            android:textAllCaps="true"
+            android:textSize="14sp" />
+
 
             <Button
-                android:id="@+id/knowledge_btn_profile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/rating__btn_profile"
-                android:text="knowledge"
-                android:textAllCaps="true" />
+            android:id="@+id/train_mode_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Train Mode (Beta)" />
 
             <Button
-                android:id="@+id/rating__btn_profile"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/game_play"
-                android:text="Rating"
-                android:textAllCaps="true" />
+            android:id="@+id/knowledge_btn_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/rating__btn_profile"
+            android:text="knowledge"
+            android:textAllCaps="true" />
 
             <Button
-                android:id="@+id/provide_question"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Provide question"
-                android:visibility="gone" />
+            android:id="@+id/rating__btn_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/game_play"
+            android:text="Rating"
+            android:textAllCaps="true" />
 
             <Button
-                android:id="@+id/log_out"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/knowledge_btn_profile"
-                android:text="Logout"
-                android:textAllCaps="true" />
+            android:id="@+id/provide_question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Provide question"
+            android:visibility="gone" />
 
+
+            <com.nhaarman.supertooltips.ToolTipRelativeLayout
+                android:id="@+id/activity_main_tooltipRelativeLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
         </LinearLayout>
 
 
     </RelativeLayout>
-
-
 </android.support.design.widget.CoordinatorLayout>

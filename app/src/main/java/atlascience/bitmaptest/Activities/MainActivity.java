@@ -25,11 +25,12 @@ import java.util.HashMap;
 
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
+import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.Fragments.AnswerResultFragment;
 import atlascience.bitmaptest.Fragments.QuestionFragment;
-import atlascience.bitmaptest.Models.Game;
-import atlascience.bitmaptest.Models.Question;
-import atlascience.bitmaptest.Models.Zones;
+import atlascience.bitmaptest.Models.Game.Game;
+import atlascience.bitmaptest.Models.Game.Question;
+import atlascience.bitmaptest.Models.Game.Zones;
 import atlascience.bitmaptest.R;
 import atlascience.bitmaptest.Services.Config;
 import cn.pedant.SweetAlert.SweetAlertDialog;
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                                 }else{
                                     my_id = Integer.parseInt(user_id2);
                                 }
-                                AppController.getApi().get_answer_time("get_answer_time",my_id,
+                                AppController.getApi().get_answer_time(Constants.Methods.Version.VERSION,Constants.Methods.Game.GET_ANSWER_TIME,my_id,
                                         Integer.parseInt(q_data.get("game_round_id"))).enqueue(new Callback<JSONObject>() {
                                     @Override
                                     public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
@@ -649,10 +650,7 @@ public class MainActivity extends AppCompatActivity {
                 counter++;
             }
         }
-        if(counter==4)
-            return true;
-        else
-            return false;
+        return counter == 4;
     }
 
     private  boolean isAllInvaded(){
@@ -669,10 +667,7 @@ public class MainActivity extends AppCompatActivity {
                 counter++;
             }
         }
-        if(counter==areas.length)
-            return true;
-        else
-            return false;
+        return counter == areas.length;
     }
 
     public boolean isStepAvailable(int move){
@@ -731,7 +726,7 @@ public class MainActivity extends AppCompatActivity {
     //giving data to server
     public void choose_land(int id){
         final int i = get_touched(id);
-        AppController.getApi().get_question("get_question", Integer.parseInt(game_id), i, move_user_id).enqueue(new Callback<JSONObject>() {
+        AppController.getApi().get_question(Constants.Methods.Version.VERSION,Constants.Methods.Game.Question.GET, Integer.parseInt(game_id), i, move_user_id).enqueue(new Callback<JSONObject>() {
             @Override
             public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
 
@@ -812,13 +807,14 @@ public class MainActivity extends AppCompatActivity {
 //                        if(!isMyZone(v.getId()))
                             if(!isCapital(get_touched(v.getId()))){
                                 choose_land(v.getId());
-                            }else{
-                                if(isAlmostAllInvaded())
-                                    Toast.makeText(MainActivity.this, "yeah", Toast.LENGTH_SHORT).show();
-                                else
-                                    Toast.makeText(MainActivity.this, "nope", Toast.LENGTH_SHORT).show();
-
                             }
+//                            else{
+//                                if(isAlmostAllInvaded())
+//                                    Toast.makeText(MainActivity.this, "yeah", Toast.LENGTH_SHORT).show();
+//                                else
+//                                    Toast.makeText(MainActivity.this, "nope", Toast.LENGTH_SHORT).show();
+
+//                            }
                         limit_clicks();
                         break;
                     case MotionEvent.ACTION_CANCEL:

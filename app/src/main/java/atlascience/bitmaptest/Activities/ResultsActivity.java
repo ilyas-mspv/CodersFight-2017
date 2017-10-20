@@ -1,6 +1,7 @@
 package atlascience.bitmaptest.Activities;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
@@ -19,10 +20,11 @@ import atlascience.bitmaptest.Adapters.ResultsAdapter;
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
 import atlascience.bitmaptest.BaseAppCompatActivity;
-import atlascience.bitmaptest.Models.Game;
-import atlascience.bitmaptest.Models.Question;
+import atlascience.bitmaptest.Constants;
+import atlascience.bitmaptest.Models.Game.Game;
+import atlascience.bitmaptest.Models.Game.Question;
+import atlascience.bitmaptest.Models.Game.Zones;
 import atlascience.bitmaptest.Models.Results;
-import atlascience.bitmaptest.Models.Zones;
 import atlascience.bitmaptest.R;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -76,7 +78,7 @@ public class ResultsActivity extends BaseAppCompatActivity {
         final HashMap<String,String> game_data = Game.getDetails();
         int games_id = Integer.parseInt(game_data.get(Game.KEY_GAME_ID));
         Zones zones = new Zones(getApplicationContext());
-        HashMap<String,String> zones_data = zones.get_zones_result();
+        HashMap<String,String> zones_data = Zones.get_zones_result();
         zones1 = zones_data.get("zones1");
         zones2 = zones_data.get("zones2");
 
@@ -89,11 +91,11 @@ public class ResultsActivity extends BaseAppCompatActivity {
                 Game game = new Game(getApplicationContext());
                 Question question = new Question(getApplicationContext());
                 Zones zones = new Zones(getApplicationContext());
-                zones.delete();
-                game.delete_game();
-                question.delete();
+                Zones.delete();
+                Game.delete_game();
+                Question.delete();
                 showProgress(getResources().getString(R.string.dialog_load_type));
-                AppController.getApi().addtoQueue("add_to_queue", String.valueOf(my_id)).enqueue(new Callback<JsonObject>() {
+                AppController.getApi().addtoQueue(Constants.Methods.Version.VERSION,Constants.Methods.Game.Queue.ADD, String.valueOf(my_id)).enqueue(new Callback<JsonObject>() {
                     @Override
                     public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                         dismissProgress();
@@ -116,23 +118,27 @@ public class ResultsActivity extends BaseAppCompatActivity {
                 Question question = new Question(getApplicationContext());
                 Zones zones = new Zones(getApplicationContext());
                 finish();
-                zones.delete();
-                game.delete_game();
-                question.delete();
+                Zones.delete();
+                Game.delete_game();
+                Question.delete();
                 startActivity(new Intent(ResultsActivity.this,ProfileActivity.class));
             }
         });
         showProgress(getResources().getString(R.string.dialog_load_type));
-        AppController.getApi().get_results("get_game_results",games_id,Integer.parseInt(zones1),Integer.parseInt(zones2)).enqueue(new Callback<JsonObject>() {
+        AppController.getApi().get_results(Constants.Methods.Version.VERSION,Constants.Methods.Game.GET_RESULTS,games_id,Integer.parseInt(zones1),Integer.parseInt(zones2)).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 Results results = new Results(response);
                 if(my_id == results.getWinner()) {
                     winner_state_result.setText(getResources().getString(R.string.text_winner));
-                    card_view_results.setBackground(getResources().getDrawable(R.drawable.results_background_green));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        card_view_results.setBackground(getResources().getDrawable(R.drawable.results_background_green));
+                    }
                 }else{
                     winner_state_result.setText(getResources().getString(R.string.text_loser));
-                    card_view_results.setBackground(getResources().getDrawable(R.drawable.results_background_red));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        card_view_results.setBackground(getResources().getDrawable(R.drawable.results_background_red));
+                    }
                 }
                 ResultsAdapter adapter = new ResultsAdapter(new Results(response),getApplicationContext());
                 rv.setAdapter(adapter);

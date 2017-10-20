@@ -1,4 +1,4 @@
-package atlascience.bitmaptest.Models;
+package atlascience.bitmaptest.Models.Game;
 
 
 import android.content.Context;

@@ -10,7 +10,7 @@ import java.util.HashMap;
 public class SessionManager {
 
     public static final String KEY_NAME = "username";
-    public static final String KEY_EMAIL = "email";
+    public static final String KEY_EMAIL = "email_et";
     public static final String KEY_ID = "id";
     public static final String KEY_TOKEN = "token";
     public static final String KEY_IMAGE_URL = "url";

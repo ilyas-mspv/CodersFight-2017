@@ -39,6 +39,7 @@ public class InstanceIDService extends FirebaseInstanceIdService {
 
     private void sendRegistrationToServer(final String token) {
         session.create_token(token);
+        //todo send to sever!
     }
 
 }

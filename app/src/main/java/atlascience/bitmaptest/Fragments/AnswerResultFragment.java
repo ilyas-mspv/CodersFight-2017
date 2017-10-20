@@ -14,9 +14,9 @@ import android.widget.TextView;
 import java.util.HashMap;
 
 import atlascience.bitmaptest.Activities.ResultsActivity;
-import atlascience.bitmaptest.Models.Game;
-import atlascience.bitmaptest.Models.Question;
-import atlascience.bitmaptest.Models.Zones;
+import atlascience.bitmaptest.Models.Game.Game;
+import atlascience.bitmaptest.Models.Game.Question;
+import atlascience.bitmaptest.Models.Game.Zones;
 import atlascience.bitmaptest.R;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -125,7 +125,7 @@ public class AnswerResultFragment extends DialogFragment {
                 @Override
                 public void onClick(View v) {
                     Zones zones = new Zones(getActivity().getApplicationContext());
-                    zones.create_zones(zones1,zones2);
+                    Zones.create_zones(zones1,zones2);
                     wait_dialog.dismiss();
                     getActivity().finish();
                     startActivity(new Intent(getActivity(),ResultsActivity.class));

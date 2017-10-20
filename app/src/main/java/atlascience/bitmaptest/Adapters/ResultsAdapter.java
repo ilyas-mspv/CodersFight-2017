@@ -14,7 +14,7 @@ import java.util.HashMap;
 
 import atlascience.bitmaptest.Authenticator.SessionManager;
 import atlascience.bitmaptest.Constants;
-import atlascience.bitmaptest.Models.Game;
+import atlascience.bitmaptest.Models.Game.Game;
 import atlascience.bitmaptest.Models.Results;
 import atlascience.bitmaptest.R;
 

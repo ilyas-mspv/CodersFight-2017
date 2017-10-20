@@ -32,10 +32,23 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <WebView
-        android:id="@+id/knowledge_content_web_view"
+    <RelativeLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+        android:layout_height="match_parent">
+
+        <atlascience.bitmaptest.Utils.ObservableWebView
+            android:id="@+id/knowledge_content_web_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/unlock_test"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/knowledge_content_web_view"
+            android:text="unlock_test" />
+    </RelativeLayout>
+
 
 </android.support.design.widget.CoordinatorLayout>
