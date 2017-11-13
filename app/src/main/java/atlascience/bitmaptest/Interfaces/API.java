@@ -190,6 +190,20 @@ public interface API {
 
     //CONTENT
 
+
+    @GET("api.php")
+    Call<JsonObject> error_info (
+            @Query("v") String version,
+            @Query("method") String method,
+            @Query("user_id") String user_id,
+            @Query("d_model") String d_model,
+            @Query("d_model_v") String d_android_version,
+            @Query("app_v") String app_v,
+            @Query("error") String error
+    );
+
+
+
     @GET("api.php")
     Call<JsonObject> provide_question(
             @Query("v") String version,

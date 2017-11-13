@@ -4,9 +4,19 @@
     <string name="title_queue_activity">Queue</string>
     <string name="title_topics_activity">Topics</string>
     <string name="title_provide_question">Provide Question</string>
-    <string name="dialog_error_type_summary">Check your Internet connection</string>
-    <string name="dialog_error_type">Error</string>
+    <string name="dialog_internet_error">Check your Internet connection</string>
+    <string name="dialog_error">Something went wrong. Try again later.</string>
     <string name="dialog_load_type">Loading..</string>
+    <string name="dialog_ok_button">Got It</string>
+
+
+    <!-- AUTH -->
+
+    <string name="email_error">Email is invalid</string>
+    <string name="password_error">Password must be more than 4 characters</string>
+    <string name="server_error"> Couldn\'t connect to server \n </string>
+    <string name="user_error">User is already signed up</string>
+    <string name="user_error_msg">Try sign in or create another one</string>
 
     <!-- SOCIAL APPS API CODES -->
     <integer name="com_vk_sdk_AppId">6038053</integer>

@@ -58,12 +58,6 @@
             </intent-filter>
         </activity>
 
-        <!-- VK -->
-        <activity
-            android:name="com.vk.sdk.VKServiceActivity"
-            android:label="ServiceActivity"
-            android:theme="@style/VK.Transparent" />
-
         <!-- APP ACTIVITIES -->
 
         <activity android:name=".Authenticator.LoginActivity" />
@@ -72,7 +66,7 @@
         <activity android:name=".Activities.MainActivity" />
         <activity
             android:name=".Activities.ProfileActivity"
-            android:label="@string/app_name" />
+            android:label="" />
         <activity
             android:name=".Utils.SplashScreenActivity"
             android:label="@string/app_name">
@@ -142,7 +136,7 @@
             android:name=".Activities.TrainMode.TrainTopicsActivity"
             android:label="@string/title_activity_train_topics"
             android:parentActivityName=".Activities.ProfileActivity"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".Activities.TrainMode.TrainGameActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -189,6 +183,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="atlascience.bitmaptest.Activities.ProfileActivity" />
         </activity>
+
+
     </application>
 
 </manifest>

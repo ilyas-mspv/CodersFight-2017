@@ -2,15 +2,12 @@ package atlascience.bitmaptest.Authenticator;
 
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,24 +23,27 @@ import com.google.gson.JsonObject;
 
 import atlascience.bitmaptest.Activities.ProfileActivity;
 import atlascience.bitmaptest.AppController;
+import atlascience.bitmaptest.BaseAppCompatActivity;
 import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.Models.SuccessResponse;
 import atlascience.bitmaptest.Models.User;
 import atlascience.bitmaptest.R;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends BaseAppCompatActivity {
 
 
-    EditText email_et, password_et;
-    Button login_btn;
-    TextView log_login;
+    @BindView(R.id.email_login) EditText email_et;
+    @BindView(R.id.sign_up) TextView sign_up;
+    @BindView(R.id.reset_password) TextView forgot_password;
+    @BindView(R.id.password_login)  EditText password_et;
+    @BindView(R.id.login_btn) Button login_btn;
     SessionManager session;
-
-    ImageView logo_view;
 
     //GOOGLE
     private GoogleApiClient mGoogleApiClient;
@@ -54,9 +54,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        initGoogleAuth();
-        initFacebookAuth();
+        ButterKnife.bind(this);
+//        initGoogleAuth();
+//        initFacebookAuth();
 
         init();
 
@@ -77,16 +77,16 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
 
 
-        SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_google);
-        signInButton.setSize(SignInButton.SIZE_STANDARD);
-
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                startActivityForResult(signInIntent, RC_SIGN_IN);
-            }
-        });
+//        SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_google);
+//        signInButton.setSize(SignInButton.SIZE_STANDARD);
+//
+//        signInButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+//                startActivityForResult(signInIntent, RC_SIGN_IN);
+//            }
+//        });
     }
 
 
@@ -120,17 +120,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void init() {
 
-        logo_view = (ImageView) findViewById(R.id.logo_image);
-        logo_view.setImageDrawable(Drawable.createFromPath(getResources().getResourceName(R.drawable.logo)));
-
-
-        email_et = (EditText) findViewById(R.id.email_login);
-        password_et =(EditText) findViewById(R.id.password_login);
-        log_login = (TextView) findViewById(R.id.log_login);
-
         session = new SessionManager(getApplicationContext());
 
-        login_btn = (Button) findViewById(R.id.login_btn);
         login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,7 +131,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        TextView sign_up = (TextView) findViewById(R.id.sign_up);
         sign_up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,7 +140,6 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        TextView forgot_password = (TextView) findViewById(R.id.reset_password);
         forgot_password.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,8 +155,7 @@ public class LoginActivity extends AppCompatActivity {
         if(password.length() > 4) {
             return true;
         } else {
-            //todo make string
-            password_et.setError(getResources().getResourceName(R.string.app_name));
+            password_et.setError(getString(R.string.password_error));
             return false;
         }
     }
@@ -176,8 +164,7 @@ public class LoginActivity extends AppCompatActivity {
         if(email.contains("@")&& email.contains(".")){
             return true;
         }else {
-            //todo make string
-            email_et.setError(getResources().getResourceName(R.string.app_name));
+            email_et.setError(getString(R.string.email_error));
             return false;
         }
     }
@@ -194,11 +181,12 @@ public class LoginActivity extends AppCompatActivity {
                             startActivity(new Intent(LoginActivity.this,ProfileActivity.class));
                             finish();
                         }else{
-                            //todo show error info to user
+                            setErrorAlert(1);
                         }
                     }
                     @Override
                     public void onFailure(Call<JsonObject> call, Throwable t) {
+                        setErrorAlert(t.getMessage());
                     }
                 }
         );
@@ -207,10 +195,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_SIGN_IN) {
-            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            handleSignInResult(result);
-        }
+//        if (requestCode == RC_SIGN_IN) {
+//            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+//            handleSignInResult(result);
+//        }
     }
 
 

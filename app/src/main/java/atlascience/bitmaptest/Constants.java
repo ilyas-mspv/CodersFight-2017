@@ -96,6 +96,7 @@ public class Constants {
             public static final String GET_ONLY_OPENED_KNOWLEDGE = "get_only_opened_knowledge";
             public static final String OPEN_KNOWLEDGE = "open_knowledge_topic";
             public static final String GET_KNOWLEDGE_IDS = "get_knowledge_ids";
+            public static final String ERROR_INFO = "error_info";
         }
     }
 

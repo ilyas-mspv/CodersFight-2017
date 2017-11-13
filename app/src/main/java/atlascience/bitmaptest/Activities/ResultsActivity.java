@@ -94,7 +94,7 @@ public class ResultsActivity extends BaseAppCompatActivity {
                 Zones.delete();
                 Game.delete_game();
                 Question.delete();
-                showProgress(getResources().getString(R.string.dialog_load_type));
+                showProgress();
                 AppController.getApi().addtoQueue(Constants.Methods.Version.VERSION,Constants.Methods.Game.Queue.ADD, String.valueOf(my_id)).enqueue(new Callback<JsonObject>() {
                     @Override
                     public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -124,7 +124,7 @@ public class ResultsActivity extends BaseAppCompatActivity {
                 startActivity(new Intent(ResultsActivity.this,ProfileActivity.class));
             }
         });
-        showProgress(getResources().getString(R.string.dialog_load_type));
+        showProgress();
         AppController.getApi().get_results(Constants.Methods.Version.VERSION,Constants.Methods.Game.GET_RESULTS,games_id,Integer.parseInt(zones1),Integer.parseInt(zones2)).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

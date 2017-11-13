@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,6 @@ import atlascience.bitmaptest.Models.Game.Game;
 import atlascience.bitmaptest.Models.Game.Question;
 import atlascience.bitmaptest.Models.Game.Zones;
 import atlascience.bitmaptest.R;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 
 /**
  * Created by Ilyas on 01-Apr-17.
@@ -38,9 +38,9 @@ public class AnswerResultFragment extends DialogFragment {
     int r_time;
     Button ok_result;
     int end_flag=0,zones1,zones2;
-    SweetAlertDialog wait_dialog;
+    AlertDialog wait_dialog;
 
-    public AnswerResultFragment(int winner, double time1, double time2, String answer1, String answer2, String correct1, String correct2, int end_flag, SweetAlertDialog dialog) {
+    public AnswerResultFragment(int winner, double time1, double time2, String answer1, String answer2, String correct1, String correct2, int end_flag, AlertDialog dialog) {
         this.winner = winner;
         this.time1 = time1;
         this.time2 = time2;
@@ -52,7 +52,7 @@ public class AnswerResultFragment extends DialogFragment {
         this.wait_dialog = dialog;
     }
 
-    public AnswerResultFragment(int winner, double time1, double time2, String answer1, String answer2, String correct1, String correct2,int end_flag,int zones1,int zones2,SweetAlertDialog dialog) {
+    public AnswerResultFragment(int winner, double time1, double time2, String answer1, String answer2, String correct1, String correct2,int end_flag,int zones1,int zones2,AlertDialog dialog) {
         this.winner = winner;
         this.time1 = time1;
         this.time2 = time2;

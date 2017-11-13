@@ -1,13 +1,16 @@
 package atlascience.bitmaptest.Activities.Learn;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,6 +20,8 @@ import atlascience.bitmaptest.BaseAppCompatActivity;
 import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.Models.Game.Question;
 import atlascience.bitmaptest.R;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Ilyas on 04-Apr-17.
@@ -24,22 +29,22 @@ import atlascience.bitmaptest.R;
 
 public class KnowledgeContentActivity extends BaseAppCompatActivity {
 
-    TextView title_content;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.title_content) TextView title_content;
+    @BindView(R.id.knowledge_content_web_view) WebView web_content;
+    @BindView(R.id.go_ahead) Button go_ahead;
 
+
+    //TODO CHANGE THIS CRAP
+    @SuppressLint({"SetJavaScriptEnabled", "JavascriptInterface"})
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_knowledge_content);
-
-        final WebView web_content = (WebView) findViewById(R.id.knowledge_content_web_view);
-
-        title_content = (TextView) findViewById(R.id.title_content);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
 
         HashMap<String,String> content_d = Question.getContentSes();
         String id = content_d.get("id");
@@ -47,7 +52,7 @@ public class KnowledgeContentActivity extends BaseAppCompatActivity {
         String topic = content_d.get("topic");
         title_content.setText(topic);
         if(isNetworkAvailable()){
-            showProgress(getResources().getString(R.string.dialog_load_type));
+            showProgress();
 
             String url = Constants.URLS.TOPIC_CONTENT_URL  +content + ".html";
             web_content.setWebViewClient(new WebBrowser());
@@ -59,14 +64,22 @@ public class KnowledgeContentActivity extends BaseAppCompatActivity {
                     int webViewHeight = web_content.getMeasuredHeight();
                     if(web_content.getScrollY() + webViewHeight >= height){
                         Toast.makeText(KnowledgeContentActivity.this, "REACHED END", Toast.LENGTH_SHORT).show();
+
                     }
 
                 }
             });
 
+            go_ahead.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(KnowledgeContentActivity.this, "TEST", Toast.LENGTH_SHORT).show();
+                }
+            });
+
             dismissProgress();
         }else{
-            setErrorAlert(getResources().getString(R.string.dialog_error_type_summary));
+            setErrorAlert(0);
         }
     }
 

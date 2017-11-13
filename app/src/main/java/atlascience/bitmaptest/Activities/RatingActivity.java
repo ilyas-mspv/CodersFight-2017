@@ -38,7 +38,7 @@ public class RatingActivity extends BaseAppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initRecyclerView();
-        showProgress(getResources().getString(R.string.dialog_load_type));
+        showProgress();
         get_list();
 
     }

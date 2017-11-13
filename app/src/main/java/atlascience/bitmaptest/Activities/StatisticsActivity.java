@@ -8,6 +8,8 @@ import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 
+import org.w3c.dom.Text;
+
 import java.util.HashMap;
 
 import atlascience.bitmaptest.AppController;
@@ -15,6 +17,8 @@ import atlascience.bitmaptest.Authenticator.SessionManager;
 import atlascience.bitmaptest.BaseAppCompatActivity;
 import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.R;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,30 +26,29 @@ import retrofit2.Response;
 
 public class StatisticsActivity extends BaseAppCompatActivity {
 
-    TextView rating_stats, played_times_stats,winner_times_stats, answered_questions_stats, correct_answers_stats,error_msg;
+    @BindView(R.id.toolbar) Toolbar toolbar;
+    @BindView(R.id.rating_stats) TextView rating_stats;
+    @BindView(R.id.played_times_stats) TextView played_times_stats;
+    @BindView(R.id.winner_times_stats) TextView winner_times_stats;
+    @BindView(R.id.answered_questions_stats) TextView answered_questions_stats;
+    @BindView(R.id.correct_answers_stats) TextView correct_answers_stats;
+    @BindView(R.id.error_msg) TextView error_msg;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_statistics);
+        ButterKnife.bind(this);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-
-        rating_stats  =(TextView) findViewById(R.id.rating_stats);
-        played_times_stats  =(TextView) findViewById(R.id.played_times_stats);
-        winner_times_stats  =(TextView) findViewById(R.id.winner_times_stats);
-        answered_questions_stats  =(TextView) findViewById(R.id.answered_questions_stats);
-        correct_answers_stats  =(TextView) findViewById(R.id.correct_answers_stats);
-        error_msg = (TextView) findViewById(R.id.error_msg);
-
         SessionManager sessionManager = new SessionManager(getApplicationContext());
         final HashMap<String,String> data = sessionManager.getUserDetails();
 
-        showProgress(getResources().getString(R.string.dialog_load_type));
+        showProgress();
 
         AppController.getApi().get_stats_data(Constants.Methods.Version.VERSION,Constants.Methods.Content.GET_STATISTICS, Integer.parseInt(data.get(SessionManager.KEY_ID))).enqueue(new Callback<JsonObject>() {
             @Override

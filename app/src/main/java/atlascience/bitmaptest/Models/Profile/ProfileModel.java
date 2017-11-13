@@ -18,7 +18,9 @@ public class ProfileModel  {
     }
 
     public JsonArray getData(){
-        return js.get("ids").getAsJsonArray();
+         JsonArray d =  js.get("ids").getAsJsonArray();
+         String ddd = "ddd";
+         if(d!=null) return d; else return js.get("success").getAsJsonArray();
     }
 
     public  int size(){

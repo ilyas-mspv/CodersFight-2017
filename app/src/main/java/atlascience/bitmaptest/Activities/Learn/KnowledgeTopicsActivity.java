@@ -14,6 +14,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.view.animation.LayoutAnimationController;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
@@ -77,6 +79,7 @@ public class KnowledgeTopicsActivity extends BaseAppCompatActivity {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerview_topics);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+
 
         final int flag;
         if(isNetworkConnected()){
@@ -142,7 +145,7 @@ public class KnowledgeTopicsActivity extends BaseAppCompatActivity {
     }
 
     private void initServerContent() {
-        showProgress("Loading..");
+        showProgress();
 
         AppController.getApi().get_opened_knowledge(Constants.Methods.Version.VERSION2,Constants.Methods.Content.GET_OPENED_KNOWLEDGE,user_id).enqueue(new Callback<JsonObject>() {
             @Override
@@ -154,6 +157,13 @@ public class KnowledgeTopicsActivity extends BaseAppCompatActivity {
                 }
                 recyclerView.setAdapter(new TopicsAdapter(topics,getApplicationContext(),1));
                 dismissProgress();
+
+                int resId = R.anim.layout_animation_fall_down;
+                LayoutAnimationController animation = AnimationUtils.loadLayoutAnimation(getApplicationContext(), resId);
+
+                recyclerView.setLayoutAnimation(animation);
+                recyclerView.getAdapter().notifyDataSetChanged();
+                recyclerView.scheduleLayoutAnimation();
             }
 
             @Override

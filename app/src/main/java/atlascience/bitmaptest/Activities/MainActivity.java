@@ -10,11 +10,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +24,7 @@ import java.util.HashMap;
 
 import atlascience.bitmaptest.AppController;
 import atlascience.bitmaptest.Authenticator.SessionManager;
+import atlascience.bitmaptest.BaseAppCompatActivity;
 import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.Fragments.AnswerResultFragment;
 import atlascience.bitmaptest.Fragments.QuestionFragment;
@@ -33,23 +33,34 @@ import atlascience.bitmaptest.Models.Game.Question;
 import atlascience.bitmaptest.Models.Game.Zones;
 import atlascience.bitmaptest.R;
 import atlascience.bitmaptest.Services.Config;
-import cn.pedant.SweetAlert.SweetAlertDialog;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseAppCompatActivity {
 
+    Unbinder unbinder;
+
+    @BindView(R.id.user_id1) TextView textView_user_id1;
+    @BindView(R.id.user_id2) TextView textView_user_id2;
+    @BindView(R.id.logs_main) TextView textview_logs;
+    @BindView(R.id.steps_counter_game) TextView steps_counter_game;
+    @BindView(R.id.r1) ImageView r1;
+    @BindView(R.id.r2) ImageView r2;
+    @BindView(R.id.r3) ImageView r3;
+    @BindView(R.id.r4) ImageView r4;
+    @BindView(R.id.r5) ImageView r5;
 
     private static final String TAG = MainActivity.class.getSimpleName();
     SessionManager session;
     int account_status = 0;
     FragmentManager fm = getSupportFragmentManager();
     Bundle bundle = new Bundle();
-    SweetAlertDialog wait_dialog;
+    AlertDialog.Builder wait_dialog; AlertDialog d;
     boolean doublePress = false;
-    TextView textView_user_id1, textView_user_id2, textview_logs,steps_counter_game;
-    ImageView r1,r2,r3,r4,r5;
 
     //users' data
     String  game_id,name,
@@ -65,10 +76,44 @@ public class MainActivity extends AppCompatActivity {
     boolean is_success_answer = false;
     private BroadcastReceiver mRegistrationBroadcastReceiver;
 
+
+    ImageView[] zonesImageView;
+    int[] zonesDrawablesCapitalGreen = new int[]{
+            R.drawable.map_area_1_green_capital,
+            R.drawable.map_area_2_green_capital,
+            R.drawable.map_area_3_green_capital,
+            R.drawable.map_area_4_green_capital,
+            R.drawable.map_area_5_green_capital};
+
+    int[] zonesDrawablesCapitalRed = new int[] {
+            R.drawable.map_area_1_red_capital,
+            R.drawable.map_area_2_red_capital,
+            R.drawable.map_area_3_red_capital,
+            R.drawable.map_area_4_red_capital,
+            R.drawable.map_area_5_red_capital};
+
+    int[] zonesDrawablesNotCapitalRed = new int[] {
+            R.drawable.map_area_1_red_not_capital,
+            R.drawable.map_area_2_red_not_capital,
+            R.drawable.map_area_3_red_not_capital,
+            R.drawable.map_area_4_red_not_capital,
+            R.drawable.map_area_5_red_not_capital};
+
+    int[] zonesDrawablesNotCapitalGreen = new int[] {
+            R.drawable.map_area_1_green_not_capital,
+            R.drawable.map_area_2_green_not_capital,
+            R.drawable.map_area_3_green_not_capital,
+            R.drawable.map_area_4_green_not_capital,
+            R.drawable.map_area_5_green_not_capital};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        unbinder = ButterKnife.bind(this);
+
+        zonesImageView = new ImageView[] {r1, r2, r3, r4, r5};
+
         session = new SessionManager(getApplicationContext());
 
         HashMap<String, String> user = session.getUserDetails();
@@ -79,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
         notification_receiver();
         GetSetData();
     }
+
+
 
     private void notification_receiver() {
 
@@ -198,47 +245,34 @@ public class MainActivity extends AppCompatActivity {
 
     //sets when Game has just created
     private void initMap() {
-        r1 = (ImageView) findViewById(R.id.r1);
-        r2 = (ImageView) findViewById(R.id.r2);
-        r3 = (ImageView) findViewById(R.id.r3);
-        r4 = (ImageView) findViewById(R.id.r4);
-        r5 = (ImageView) findViewById(R.id.r5);
 
-        r1.setDrawingCacheEnabled(true);
-        r2.setDrawingCacheEnabled(true);
-        r3.setDrawingCacheEnabled(true);
-        r4.setDrawingCacheEnabled(true);
-        r5.setDrawingCacheEnabled(true);
-        Button finish_test = (Button) findViewById(R.id.finish_test);
-        finish_test.setVisibility(View.GONE);
-
-        if(account_status==2){
-            finish_test.setVisibility(View.VISIBLE);
-            finish_test.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Game game = new Game(getApplicationContext());
-                    Zones z = new Zones(getApplicationContext());
-                    Question q = new Question(getApplicationContext());
-                    Zones.delete();
-                    Game.delete_game();
-                    Question.delete();
-                    System.exit(0);
-                }
-            });
+        for (int i = 0; i < 4; i++) {
+            zonesImageView[i].setDrawingCacheEnabled(true);
         }
+
+//        Button finish_test = (Button) findViewById(R.id.finish_test);
+//        finish_test.setVisibility(View.GONE);
+//
+//        if(account_status==2){
+//            finish_test.setVisibility(View.VISIBLE);
+//            finish_test.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    Game game = new Game(getApplicationContext());
+//                    Zones z = new Zones(getApplicationContext());
+//                    Question q = new Question(getApplicationContext());
+//                    Zones.delete();
+//                    Game.delete_game();
+//                    Question.delete();
+//                    System.exit(0);
+//                }
+//            });
+//        }
 
 
     }
 
     private  void GetSetData(){
-
-        textView_user_id1 = (TextView) findViewById(R.id.user_id1);
-        textView_user_id2 = (TextView) findViewById(R.id.user_id2);
-        textview_logs = (TextView) findViewById(R.id.logs_main);
-        steps_counter_game = (TextView) findViewById(R.id.steps_counter_game);
-
-        //setting user's default data
 
         try{
             Game game = new Game(getApplicationContext());
@@ -257,50 +291,13 @@ public class MainActivity extends AppCompatActivity {
 
         init_first_player();
 
-        //TODO change feature
-//        ImageView[] zonesImageView = new ImageView[] {r1, r2, r3, r4, r5};
-//        int[] zonesDrawables = new int[] {R.drawable.map_area_1_green_capital, R.drawable.map_area_1_green_capital,R.drawable.map_area_1_green_capital,R.drawable.map_area_1_green_capital,R.drawable.map_area_1_green_capital};
-//
-//        for (int i = 0; i < 5; i++) {
-//            zonesImageView[i].setImageResource(zonesDrawables[i]);
-//        }
 
-        switch (zone_1) {
-            case 1:
-                r1.setImageResource(R.drawable.map_area_1_green_capital);
-                break;
-            case 2:
-                r2.setImageResource(R.drawable.map_area_2_green_capital);
-                break;
-            case 3:
-                r3.setImageResource(R.drawable.map_area_3_green_capital);
-                break;
-            case 4:
-                r4.setImageResource(R.drawable.map_area_4_green_capital);
-                break;
-            case 5:
-                r5.setImageResource(R.drawable.map_area_5_green_capital);
-                break;
+        for (int i = 0; i < 5; i++) {
+            if(i ==zone_1-1) zonesImageView[i].setImageResource(zonesDrawablesCapitalGreen[i]);
         }
-
-        switch (zone_2) {
-            case 1:
-                r1.setImageResource(R.drawable.map_area_1_red_capital);
-                break;
-            case 2:
-                r2.setImageResource(R.drawable.map_area_2_red_capital);
-                break;
-            case 3:
-                r3.setImageResource(R.drawable.map_area_3_red_capital);
-                break;
-            case 4:
-                r4.setImageResource(R.drawable.map_area_4_red_capital);
-                break;
-            case 5:
-                r5.setImageResource(R.drawable.map_area_5_red_capital);
-                break;
+        for (int i = 0; i < 5; i++) {
+            if(i==zone_2-1) zonesImageView[i].setImageResource(zonesDrawablesCapitalRed[i]);
         }
-
     }
 
     private void init_first_player() {
@@ -370,24 +367,17 @@ public class MainActivity extends AppCompatActivity {
     public void setOnClickListenersForUser(boolean isTouchable) {
 
         if (isTouchable) {
-            r1.setEnabled(true);
-            r2.setEnabled(true);
-            r3.setEnabled(true);
-            r4.setEnabled(true);
-            r5.setEnabled(true);
 
-            r1.setOnTouchListener(rOnTouch);
-            r2.setOnTouchListener(rOnTouch);
-            r3.setOnTouchListener(rOnTouch);
-            r4.setOnTouchListener(rOnTouch);
-            r5.setOnTouchListener(rOnTouch);
+            for (int i = 0; i < 5; i++) {
+                zonesImageView[i].setEnabled(true);
+                zonesImageView[i].setOnTouchListener(rOnTouch);
+            }
 
         }else{
-            r1.setEnabled(false);
-            r2.setEnabled(false);
-            r3.setEnabled(false);
-            r4.setEnabled(false);
-            r5.setEnabled(false);
+
+            for (int i = 0; i < 5; i++) {
+                zonesImageView[i].setEnabled(false);
+            }
         }
     }
 
@@ -544,83 +534,28 @@ public class MainActivity extends AppCompatActivity {
 
     private void set_red_zone(int zone) {
         if(!isCapital(zone)){
-            switch (zone) {
-                case 1:
-                    r1.setImageResource(R.drawable.map_area_1_red_not_capital);
-                    break;
-                case 2:
-                    r2.setImageResource(R.drawable.map_area_2_red_not_capital);
-                    break;
-                case 3:
-                    r3.setImageResource(R.drawable.map_area_3_red_not_capital);
-                    break;
-                case 4:
-                    r4.setImageResource(R.drawable.map_area_4_red_not_capital);
-                    break;
-                case 5:
-                    r5.setImageResource(R.drawable.map_area_5_red_not_capital);
-                    break;
+
+            for (int i = 0; i < 5; i++) {
+                if(zone-1 == i) zonesImageView[i].setImageResource(zonesDrawablesNotCapitalRed[i]);
             }
 
         }else{
-            switch (zone) {
-                case 1:
-                    r1.setImageResource(R.drawable.map_area_1_red_capital);
-                    break;
-                case 2:
-                    r2.setImageResource(R.drawable.map_area_2_red_capital);
-                    break;
-                case 3:
-                    r3.setImageResource(R.drawable.map_area_3_red_capital);
-                    break;
-                case 4:
-                    r4.setImageResource(R.drawable.map_area_4_red_capital);
-                    break;
-                case 5:
-                    r5.setImageResource(R.drawable.map_area_5_red_not_capital);
-                    break;
-            }
 
-    }
+            for (int i = 0; i < 5; i++) {
+                if(zone-1 ==i) zonesImageView[i].setImageResource(zonesDrawablesCapitalRed[i]);
+            }
+        }
     }
 
     private void set_green_zone(int zone) {
         if(!isCapital(zone)){
-            switch (zone) {
-                case 1:
-                    r1.setImageResource(R.drawable.map_area_1_green_not_capital);
-                    break;
-                case 2:
-                    r2.setImageResource(R.drawable.map_area_2_green_not_capital);
-                    break;
-                case 3:
-                    r3.setImageResource(R.drawable.map_area_3_green_not_capital);
-                    break;
-                case 4:
-                    r4.setImageResource(R.drawable.map_area_4_green_not_capital);
-                    break;
-                case 5:
-                    r5.setImageResource(R.drawable.map_area_5_green_not_capital);
-                    break;
+
+            for (int i = 0; i < 5; i++) {
+                if(zone-1 ==i) zonesImageView[i].setImageResource(zonesDrawablesNotCapitalGreen[i]);
             }
         }else{
-            //color capitals
-            switch (zone) {
-                case 1:
-                    r1.setImageResource(R.drawable.map_area_1_green_capital);
-                    break;
-                case 2:
-                    r2.setImageResource(R.drawable.map_area_2_green_capital);
-                    break;
-                case 3:
-                    r3.setImageResource(R.drawable.map_area_3_green_capital);
-                    break;
-                case 4:
-                    r4.setImageResource(R.drawable.map_area_4_green_capital);
-                    break;
-                case 5:
-                    r5.setImageResource(R.drawable.map_area_5_green_capital);
-                    break;
+            for (int i = 0; i < 5; i++) {
+                if(zone-1 ==i) zonesImageView[i].setImageResource(zonesDrawablesCapitalGreen[i]);
             }
         }
 
@@ -718,9 +653,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unbinder.unbind();
+
         System.runFinalization();
         Runtime.getRuntime().gc();
         System.gc();
+
     }
 
     //giving data to server
@@ -741,9 +679,10 @@ public class MainActivity extends AppCompatActivity {
 
         //question part
     private void create_question_dialog() {
-        wait_dialog = new SweetAlertDialog(MainActivity.this,SweetAlertDialog.PROGRESS_TYPE);
-        wait_dialog.setTitleText("Loading..");
-        wait_dialog.show();
+        wait_dialog = new AlertDialog.Builder(MainActivity.this);
+        wait_dialog.setTitle(getString(R.string.dialog_load_type));
+        d = wait_dialog.create();
+        d.show();
         int my_id;
         if(username1.equals(name)){
             my_id = Integer.parseInt(user_id1);
@@ -756,31 +695,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void create_result_dialog_round(int winner, double time1, double time2, String answer1, String answer2, String correct1, String correct2) {
-        wait_dialog.setTitleText("Forward to the answer");
-        AnswerResultFragment fragment = new AnswerResultFragment(winner,time1,time2,answer1,answer2,correct1,correct2,0,wait_dialog);
+        wait_dialog.setTitle("Forward to the answer");
+        AnswerResultFragment fragment = new AnswerResultFragment(winner,time1,time2,answer1,answer2,correct1,correct2,0,d);
         fragment.show(fm,"tag");
     }
 
     private void create_result_dialog_end(int winner, double time1, double time2, String answer1, String answer2, String correct1, String correct2,int zones1,int zones2) {
-        wait_dialog.setTitleText("Forward to the answer");
-        AnswerResultFragment fragment = new AnswerResultFragment(winner,time1,time2,answer1,answer2,correct1,correct2,1,zones1,zones2,wait_dialog);
+        wait_dialog.setTitle("Forward to the answer");
+        AnswerResultFragment fragment = new AnswerResultFragment(winner,time1,time2,answer1,answer2,correct1,correct2,1,zones1,zones2,d);
         fragment.show(fm,"tag");
     }
 
     public void limit_clicks(){
-        r1.setEnabled(false);
-        r2.setEnabled(false);
-        r3.setEnabled(false);
-        r4.setEnabled(false);
-        r5.setEnabled(false);
+
+        for (int i = 0; i < 5; i++) {
+            zonesImageView[i].setEnabled(false);
+        }
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                r1.setEnabled(true);
-                r2.setEnabled(true);
-                r3.setEnabled(true);
-                r4.setEnabled(true);
-                r5.setEnabled(true);
+                for (int i = 0; i < 5; i++) {
+                    zonesImageView[i].setEnabled(true);
+                }
             }
         },1000);
     }

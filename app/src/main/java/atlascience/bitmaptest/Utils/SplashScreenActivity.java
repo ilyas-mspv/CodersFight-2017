@@ -1,41 +1,36 @@
-    package atlascience.bitmaptest.Utils;
+package atlascience.bitmaptest.Utils;
 
-    import android.content.Context;
-    import android.content.Intent;
-    import android.net.ConnectivityManager;
-    import android.net.NetworkInfo;
-    import android.os.AsyncTask;
-    import android.os.Bundle;
-    import android.os.Handler;
-    import android.support.annotation.Nullable;
-    import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 
-    import com.google.firebase.iid.FirebaseInstanceId;
-    import com.google.gson.JsonObject;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.JsonObject;
 
-    import java.util.HashMap;
+import java.util.HashMap;
 
-    import atlascience.bitmaptest.Activities.ProfileActivity;
-    import atlascience.bitmaptest.AppController;
-    import atlascience.bitmaptest.Authenticator.LoginActivity;
-    import atlascience.bitmaptest.Authenticator.SessionManager;
-    import atlascience.bitmaptest.Constants;
-    import atlascience.bitmaptest.R;
-    import de.hdodenhof.circleimageview.CircleImageView;
-    import retrofit2.Call;
-    import retrofit2.Callback;
-    import retrofit2.Response;
+import atlascience.bitmaptest.Activities.ProfileActivity;
+import atlascience.bitmaptest.AppController;
+import atlascience.bitmaptest.Authenticator.LoginActivity;
+import atlascience.bitmaptest.Authenticator.SessionManager;
+import atlascience.bitmaptest.BaseAppCompatActivity;
+import atlascience.bitmaptest.Constants;
+import atlascience.bitmaptest.R;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
  * Created by Ilyas on 22-Apr-17.
  */
 
-public class SplashScreenActivity extends AppCompatActivity {
+public class SplashScreenActivity extends BaseAppCompatActivity {
     private static int SPLASH_TIME_OUT = 2000;
     SessionManager session;
     HashMap<String,String> user;
-    CircleImageView profile_photo;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,12 +47,6 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     }
 
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
 
     class Tasks extends AsyncTask<Void,Void,Void> {
 

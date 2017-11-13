@@ -1,10 +1,11 @@
 package atlascience.bitmaptest.Activities;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -37,7 +38,6 @@ import atlascience.bitmaptest.Models.RequestPlayer;
 import atlascience.bitmaptest.R;
 import atlascience.bitmaptest.Services.Config;
 import atlascience.bitmaptest.Utils.ItemClickSupport;
-import cn.pedant.SweetAlert.SweetAlertDialog;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -69,7 +69,7 @@ public class QueueActivity extends BaseAppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if(isNetworkAvailable())
-        initQueuePlayers(); else setErrorAlert(getResources().getString(R.string.dialog_error_type));
+        initQueuePlayers(); else setErrorAlert(0);
 
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -147,10 +147,7 @@ public class QueueActivity extends BaseAppCompatActivity {
                 android.R.color.holo_red_light);
 
         session_init();
-        SweetAlertDialog dialog = new SweetAlertDialog(QueueActivity.this,SweetAlertDialog.PROGRESS_TYPE);
-        dialog.setTitleText("Loading..");
-        dialog.show();
-        get_all_from_queue(dialog);
+        get_all_from_queue();
 
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -179,7 +176,7 @@ public class QueueActivity extends BaseAppCompatActivity {
         });
     }
 
-    public void get_all_from_queue(final SweetAlertDialog dialog) {
+    public void get_all_from_queue() {
         AppController.getApi().get_all_from_queue(Constants.Methods.Version.VERSION,Constants.Methods.Game.Queue.GET).enqueue(new Callback<QueueResponse>() {
             @Override
             public void onResponse(Call<QueueResponse> call, Response<QueueResponse> response) {
@@ -188,7 +185,6 @@ public class QueueActivity extends BaseAppCompatActivity {
                 adapter = new QueueAdapter(queueList, getApplicationContext());
 
                 rv.setAdapter(adapter);
-                dialog.dismiss();
             }
 
             @Override
@@ -214,12 +210,8 @@ public class QueueActivity extends BaseAppCompatActivity {
         random_player.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final SweetAlertDialog pDialog = new SweetAlertDialog(QueueActivity.this, SweetAlertDialog.PROGRESS_TYPE);
-                pDialog.getProgressHelper().setBarColor(Color.parseColor("#A5DC86"));
-                pDialog.setTitleText("Loading..");
-                pDialog.setCancelable(false);
-                pDialog.show();
-                server_go_to_game(id,pDialog);
+                showProgress();
+                server_go_to_game(id);
             }
         });
     }
@@ -264,62 +256,59 @@ public class QueueActivity extends BaseAppCompatActivity {
     }
 
     private void set_alert_negative(String nickname) {
-        new SweetAlertDialog(QueueActivity.this,SweetAlertDialog.NORMAL_TYPE)
-                .setTitleText("Game request")
-                .setContentText(nickname+ " refused to play with you")
-                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
-                    @Override
-                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        sweetAlertDialog.dismiss();
-                    }
-                }).show();
+        AlertDialog.Builder b = new AlertDialog.Builder(QueueActivity.this);
+        b.setTitle("Game Request");
+        b.setMessage(nickname + " refused to play with you");
+        b.setNeutralButton(getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        AlertDialog d = b.create();
+        d.show();
     }
 
     private void set_alert_positive(final int apr_id, String nickname) {
-        new SweetAlertDialog(QueueActivity.this, SweetAlertDialog.NORMAL_TYPE)
-                .setTitleText("Game request")
-                .setContentText(nickname +" wants to play with you. Do you want to start?")
-                .setCancelText("No")
-                .setConfirmText("Yes!")
-                .showCancelButton(true)
-                .setCancelClickListener(new SweetAlertDialog.OnSweetClickListener() {
+
+        AlertDialog.Builder b = new AlertDialog.Builder(QueueActivity.this);
+        b.setTitle("Game Request");
+        b.setMessage(nickname +" wants to play with you. Do you want to start?");
+        b.setPositiveButton(getString(R.string.dialog_ok), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                AppController.getApi().invite_to_game(Constants.Methods.Version.VERSION,Constants.Methods.Game.INVITE, Integer.parseInt(user.get(SessionManager.KEY_ID)), apr_id).enqueue(new Callback<JSONObject>() {
                     @Override
-                    public void onClick(SweetAlertDialog sDialog) {
-                        sDialog.cancel();
+                    public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
+
                     }
-                })
-                .setConfirmClickListener(new SweetAlertDialog.OnSweetClickListener() {
+
                     @Override
-                    public void onClick(SweetAlertDialog sweetAlertDialog) {
-                        sweetAlertDialog.dismiss();
-                        final SweetAlertDialog d = new SweetAlertDialog(QueueActivity.this,SweetAlertDialog.PROGRESS_TYPE);
-                        d.setTitleText("Loading..").show();
-
-                        AppController.getApi().invite_to_game(Constants.Methods.Version.VERSION,Constants.Methods.Game.INVITE, Integer.parseInt(user.get(SessionManager.KEY_ID)), apr_id).enqueue(new Callback<JSONObject>() {
-                            @Override
-                            public void onResponse(Call<JSONObject> call, Response<JSONObject> response) {
-                                    d.dismiss();
-                            }
-
-                            @Override
-                            public void onFailure(Call<JSONObject> call, Throwable t) {
-
-                                setErrorAlert(t.getMessage());
-                            }
-                        });
+                    public void onFailure(Call<JSONObject> call, Throwable t) {
+                        setErrorAlert(t.getMessage());
                     }
-                })
-                .show();
+                });
+            }
+        });
+        b.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+        AlertDialog d = b.create();
+        d.show();
+
     }
 
 
-    public void server_go_to_game(String id, final SweetAlertDialog dialog){
+    public void server_go_to_game(String id){
         AppController.getApi().add_to_game(Constants.Methods.Version.VERSION,Constants.Methods.Game.PLAY,id).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 JsonObject res = response.body();
-                dialog.dismiss();
-
+                dismissProgress();
             }
 
             @Override

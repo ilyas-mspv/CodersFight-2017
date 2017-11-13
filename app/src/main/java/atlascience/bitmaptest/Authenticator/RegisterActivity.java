@@ -4,7 +4,7 @@ package atlascience.bitmaptest.Authenticator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,32 +13,35 @@ import com.google.gson.JsonObject;
 
 import atlascience.bitmaptest.Activities.ProfileActivity;
 import atlascience.bitmaptest.AppController;
+import atlascience.bitmaptest.BaseAppCompatActivity;
 import atlascience.bitmaptest.Constants;
 import atlascience.bitmaptest.Models.User;
 import atlascience.bitmaptest.R;
 import atlascience.bitmaptest.Utils.GeneralDialogFragment;
-import cn.pedant.SweetAlert.SweetAlertDialog;
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class RegisterActivity  extends AppCompatActivity implements GeneralDialogFragment.OnDialogFragmentClickListener {
+import static atlascience.bitmaptest.Constants.Methods.User.GET;
+import static atlascience.bitmaptest.Constants.Methods.Version.VERSION;
 
+public class RegisterActivity  extends BaseAppCompatActivity implements GeneralDialogFragment.OnDialogFragmentClickListener {
 
-    EditText username,email,password;
-    Button sign_up;
+    @BindView(R.id.nickname) EditText username;
+    @BindView(R.id.email) EditText email;
+    @BindView(R.id.password) EditText password;
+    @BindView(R.id.sign_up_btn) Button sign_up;
+
     SessionManager session;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        ButterKnife.bind(this);
 
-
-        username = (EditText) findViewById(R.id.nickname);
-        email = (EditText) findViewById(R.id.email);
-        password = (EditText) findViewById(R.id.password);
-        sign_up = (Button) findViewById(R.id.sign_up_btn);
         session = new SessionManager(getApplicationContext());
 
         sign_up.setOnClickListener(new View.OnClickListener() {
@@ -55,9 +58,10 @@ public class RegisterActivity  extends AppCompatActivity implements GeneralDialo
        final String user = username.getText().toString();
        final String mail = email.getText().toString();
        final String pass = password.getText().toString();
+
             if (pass.length() > 4) {
                 if (mail.contains("@") && mail.contains(".")) {
-                    AppController.getApi().addUser(Constants.Methods.Version.VERSION,Constants.Methods.User.ADD, user, mail, pass)
+                    AppController.getApi().addUser(VERSION,Constants.Methods.User.ADD, user, mail, pass)
                             .enqueue(new Callback<JsonObject>() {
                                          @Override
                                          public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -67,10 +71,11 @@ public class RegisterActivity  extends AppCompatActivity implements GeneralDialo
                                                  if (r.contains("User created")) {
                                                      login(mail, pass);
                                                  }else{
-                                                     new SweetAlertDialog(RegisterActivity.this)
-                                                             .setTitleText("User is already registered")
-                                                             .setContentText("Try to login or create another one")
-                                                             .show();
+                                                     AlertDialog.Builder d = new AlertDialog.Builder(RegisterActivity.this)
+                                                             .setTitle(getString(R.string.user_error))
+                                                             .setMessage(getString(R.string.user_error_msg));
+                                                     AlertDialog f = d.create();
+                                                     f.show();
 
                                                  }
                                              }
@@ -86,16 +91,16 @@ public class RegisterActivity  extends AppCompatActivity implements GeneralDialo
                                      }
                             );
                 } else {
-                    email.setError("Invalid email_et");
+                    email.setError(getString(R.string.email_error));
                 }
             } else {
-                password.setError("Password is too small");
+                password.setError(getString(R.string.password_error));
             }
     }
 
     private void login(final String email,final String password) {
 
-        AppController.getApi().getUser(Constants.Methods.Version.VERSION,Constants.Methods.User.GET,email,password).enqueue(new Callback<JsonObject>() {
+        AppController.getApi().getUser(VERSION,GET,email,password).enqueue(new Callback<JsonObject>() {
             @Override
             public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                 User user = new User(response);
@@ -108,7 +113,7 @@ public class RegisterActivity  extends AppCompatActivity implements GeneralDialo
 
             @Override
             public void onFailure(Call<JsonObject> call, Throwable t) {
-
+                setErrorAlert(t.getMessage());
             }
         });
     }

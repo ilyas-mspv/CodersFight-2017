@@ -32,23 +32,28 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <RelativeLayout
+    <LinearLayout
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
 
         <atlascience.bitmaptest.Utils.ObservableWebView
             android:id="@+id/knowledge_content_web_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_weight="1"
+            android:layout_height="match_parent" />
 
         <Button
-            android:id="@+id/unlock_test"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/knowledge_content_web_view"
-            android:text="unlock_test" />
-    </RelativeLayout>
+            android:id="@+id/go_ahead"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:layout_weight="1"
+            android:background="@null"
+            android:text="Go ahead" />
+
+    </LinearLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>
